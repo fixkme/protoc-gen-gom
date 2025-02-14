@@ -1,0 +1,19 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/model";
+package model;
+
+import "model/model_activity.proto";
+import "pbext/options_ext.proto";
+
+// @model
+// 玩家数据
+message PlayerModel 
+{
+	option (is_model) = true;
+
+	int64 player_id = 1;
+	// 活动信息
+	ModelActivity model_activity = 2;
+	map<string, ModelActivity> model_activity2 = 3 [(no_sync_client) = true];
+}

@@ -1,0 +1,98 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/datas";
+package datas;
+
+// 服务器用的活动信息
+// 只用于服务器数据库
+message ActivityData
+{
+	// 活动id
+	int64 activity_id = 1; // 唯一id
+	// 功能类型
+	ActivityType func_type = 2;
+	// 活动状态
+	ActivityStatus status = 3;
+	// 显示开始时间
+	int64 show_start = 4;
+	// 显示结束时间，结束之前还能领奖
+	int64 show_end = 5;
+	// 生效开始时间，可以做任务了
+	int64 effect_start = 6;
+	// 生效结束时间，不能做任务
+	int64 effect_end = 7;
+	// 配置模板
+	int64 config_temp = 8;
+	// 配置内容 json 废弃
+	string config_content = 9;
+	// 配置结构名，前端用来解析config_content 废弃
+	string config_name = 10;
+	// 有效的服务器id，-1表示全部服务器
+	repeated int64 server_includes = 11;
+	// 排除的服务器id
+	repeated int64 server_excludes = 12;
+	// 服务器分组列表
+	repeated ActivityServerGroup server_groups = 13;
+	// 来源 0后台 1本地配置
+	int64 src_type = 14;
+}
+
+// 活动服务器分组
+message ActivityServerGroup
+{
+	// 分组id
+	int64 id = 1;
+	// 成员列表
+	repeated int64 elems = 2;
+}
+
+// 限时 累积充值玩家信息
+message TimeLimitTotalRechargeInfo
+{
+	// 活动id
+	int64 activity_id = 1;
+	// 用户分组
+	int64 user_group = 2;
+	// 累积充值
+	int64 total_recharge = 3;
+	// 已领取奖励列表
+	map<int64, bool> get_rewards = 4;
+	// 是否处理了结束，如发邮件
+	bool is_over = 5;
+	// 今日是否充值
+	bool daily_flag = 6;
+	// 累积充值天数
+	int64 total_day = 7;
+	// 上次跨天
+	int64 last_reset_time = 8;
+}
+
+// 活动类型
+enum ActivityType
+{
+	Unknown = 0;
+
+	TotalRecharge = 1;
+
+	BattlePass = 2;
+}
+
+// 活动状态
+enum ActivityStatus
+{
+	New = 0;
+
+	Launch = 1;
+
+	Show = 2;
+
+	Open = 3;
+
+	Close = 4;
+
+	Expired = 5;
+
+	Invalid = 6;
+
+}
+

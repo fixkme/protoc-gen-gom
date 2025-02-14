@@ -1,0 +1,14 @@
+// copy from  ../../../internal/pbext/options_ext.proto
+// in example path: protoc -I proto  --go_out=paths=source_relative:./pbout/go ./proto/pbext/*.proto
+syntax = "proto3";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/pbext";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.MessageOptions {
+    bool is_model = 50000;
+}
+
+extend google.protobuf.FieldOptions {
+    bool no_sync_client = 50000;
+}

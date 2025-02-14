@@ -1,0 +1,25 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/model";
+package model;
+
+import "datas/activity_data.proto";
+
+message SawingInfo
+{
+	// 冲榜活动轮次
+	int64 sawing_round = 1;
+	// 冲榜活动轮次阶段
+	int64 sawing_step = 2;
+	datas.ActivityStatus status = 3;
+}
+
+// 玩家活动数据
+message ModelActivity 
+{
+	map<int32, int32> local_activity_ids = 1;
+	// 限时累计充值活动 活动id => TimeLimitTotalRechargeInfo
+	map<int64, datas.TimeLimitTotalRechargeInfo> total_recharges = 2; // 累计金额、天数
+	// 冲榜活动信息
+	SawingInfo sawing_data = 3;
+}
