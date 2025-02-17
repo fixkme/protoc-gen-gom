@@ -253,15 +253,15 @@ func genMessageFieldMethods(g *protogen.GeneratedFile, f *protogen.File, m *mess
 }
 
 func genMessageFieldGetter(g *protogen.GeneratedFile, f *protogen.File, m *messageInfo, field *fieldInfo) {
-	g.P(field.Comments.Leading)
-	g.P(field.Comments.Trailing)
 	if field.isMap {
-		g.P("func (m *", m.GoIdent.GoName, ") Get", field.GoName, "(key ", field.mapKeyType, ") (", field.mapValType, ", bool) {")
+		g.P(field.Comments.Leading, field.Comments.Trailing,
+			"func (m *", m.GoIdent.GoName, ") Get", field.GoName, "(key ", field.mapKeyType, ") (", field.mapValType, ", bool) {")
 		g.P("value, exists := m.", field.mName, "[key]")
 		g.P("return value, exists")
 		g.P("}")
 	} else {
-		g.P("func (m *", m.GoIdent.GoName, ") Get", field.GoName, "() ", field.mType, " {")
+		g.P(field.Comments.Leading, field.Comments.Trailing,
+			"func (m *", m.GoIdent.GoName, ") Get", field.GoName, "() ", field.mType, " {")
 		g.P("return m.", field.mName)
 		g.P("}")
 	}
@@ -376,8 +376,8 @@ func genMessageFieldMapRangeFunc(g *protogen.GeneratedFile, f *protogen.File, m 
 	if !field.isMap {
 		return
 	}
-	g.P(field.Comments.Leading, field.Comments.Trailing)
-	g.P("func (m *", m.GoIdent.GoName, ") Range", field.GoName, "(f func(key ", field.mapKeyType, ", value ", field.mapValType, ") bool) {")
+	g.P(field.Comments.Leading, field.Comments.Trailing,
+		"func (m *", m.GoIdent.GoName, ") Range", field.GoName, "(f func(key ", field.mapKeyType, ", value ", field.mapValType, ") bool) {")
 	g.P("for k, v := range m.", field.mName, " {")
 	g.P("if !f(k, v) {")
 	g.P("return")

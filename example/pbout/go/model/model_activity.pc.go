@@ -198,9 +198,7 @@ func (m *MModelActivity) RangeLocalActivityIds(f func(key int32, value int32) bo
 }
 
 // 限时累计充值活动 活动id => TimeLimitTotalRechargeInfo
-
 // 累计金额、天数
-
 func (m *MModelActivity) GetTotalRecharges(key int64) (*datas.MTimeLimitTotalRechargeInfo, bool) {
 	value, exists := m.totalRecharges[key]
 	return value, exists
@@ -238,7 +236,6 @@ func (m *MModelActivity) GetTotalRechargesCount() int64 {
 
 // 限时累计充值活动 活动id => TimeLimitTotalRechargeInfo
 // 累计金额、天数
-
 func (m *MModelActivity) RangeTotalRecharges(f func(key int64, value *datas.MTimeLimitTotalRechargeInfo) bool) {
 	for k, v := range m.totalRecharges {
 		if !f(k, v) {
@@ -248,7 +245,6 @@ func (m *MModelActivity) RangeTotalRecharges(f func(key int64, value *datas.MTim
 }
 
 // 冲榜活动信息
-
 func (m *MModelActivity) GetSawingData() *MSawingInfo {
 	return m.sawingData
 }
@@ -358,7 +354,6 @@ func (m *MSawingInfo) String() string {
 }
 
 // 冲榜活动轮次
-
 func (m *MSawingInfo) GetSawingRound() int64 {
 	return m.sawingRound
 }
@@ -376,7 +371,6 @@ func (m *MSawingInfo) AddSawingRound(add int64) int64 {
 }
 
 // 冲榜活动轮次阶段
-
 func (m *MSawingInfo) GetSawingStep() int64 {
 	return m.sawingStep
 }

@@ -147,7 +147,6 @@ func (m *MPlayerModel) AddPlayerId(add int64) int64 {
 }
 
 // 活动信息
-
 func (m *MPlayerModel) GetModelActivity() *MModelActivity {
 	return m.modelActivity
 }

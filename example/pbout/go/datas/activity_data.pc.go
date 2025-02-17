@@ -168,7 +168,6 @@ func (m *MTimeLimitTotalRechargeInfo) String() string {
 }
 
 // 活动id
-
 func (m *MTimeLimitTotalRechargeInfo) GetActivityId() int64 {
 	return m.activityId
 }
@@ -186,7 +185,6 @@ func (m *MTimeLimitTotalRechargeInfo) AddActivityId(add int64) int64 {
 }
 
 // 用户分组
-
 func (m *MTimeLimitTotalRechargeInfo) GetUserGroup() int64 {
 	return m.userGroup
 }
@@ -204,7 +202,6 @@ func (m *MTimeLimitTotalRechargeInfo) AddUserGroup(add int64) int64 {
 }
 
 // 累积充值
-
 func (m *MTimeLimitTotalRechargeInfo) GetTotalRecharge() int64 {
 	return m.totalRecharge
 }
@@ -222,7 +219,6 @@ func (m *MTimeLimitTotalRechargeInfo) AddTotalRecharge(add int64) int64 {
 }
 
 // 已领取奖励列表
-
 func (m *MTimeLimitTotalRechargeInfo) GetGetRewards(key int64) (bool, bool) {
 	value, exists := m.getRewards[key]
 	return value, exists
@@ -257,7 +253,6 @@ func (m *MTimeLimitTotalRechargeInfo) GetGetRewardsCount() int64 {
 }
 
 // 已领取奖励列表
-
 func (m *MTimeLimitTotalRechargeInfo) RangeGetRewards(f func(key int64, value bool) bool) {
 	for k, v := range m.getRewards {
 		if !f(k, v) {
@@ -267,7 +262,6 @@ func (m *MTimeLimitTotalRechargeInfo) RangeGetRewards(f func(key int64, value bo
 }
 
 // 是否处理了结束，如发邮件
-
 func (m *MTimeLimitTotalRechargeInfo) GetIsOver() bool {
 	return m.isOver
 }
@@ -278,7 +272,6 @@ func (m *MTimeLimitTotalRechargeInfo) SetIsOver(value bool) {
 }
 
 // 今日是否充值
-
 func (m *MTimeLimitTotalRechargeInfo) GetDailyFlag() bool {
 	return m.dailyFlag
 }
@@ -289,7 +282,6 @@ func (m *MTimeLimitTotalRechargeInfo) SetDailyFlag(value bool) {
 }
 
 // 累积充值天数
-
 func (m *MTimeLimitTotalRechargeInfo) GetTotalDay() int64 {
 	return m.totalDay
 }
@@ -307,7 +299,6 @@ func (m *MTimeLimitTotalRechargeInfo) AddTotalDay(add int64) int64 {
 }
 
 // 上次跨天
-
 func (m *MTimeLimitTotalRechargeInfo) GetLastResetTime() int64 {
 	return m.lastResetTime
 }
