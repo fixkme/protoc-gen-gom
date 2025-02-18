@@ -144,7 +144,8 @@ func mToPBName(s string) string {
 // PB前缀转M前缀
 func pbToMName(s string) string {
 	if len(s) < 2 || s[:2] != "PB" {
-		panic("pbToMName: invalid message pb name: " + s)
+		//panic("pbToMName: invalid message pb name: " + s)
+		return "M" + s
 	}
 	b := make([]byte, len(s)-1)
 	b[0] = 'M'

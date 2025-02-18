@@ -31,7 +31,8 @@ func main() {
 	var (
 		flags                                 flag.FlagSet
 		goMod                                 = flags.String("go-mod", "", "go module name")
-		rpcPkgs                               = flags.String("rpc-pkgs", "", "rpc pkg names sep=#")
+		dataPkgs                              = flags.String("data-pkgs", "", "data pkg names sep=^")
+		rpcPkgs                               = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
 		plugins                               = flags.String("plugins", "", "deprecated option")
 		experimentalStripNonFunctionalCodegen = flags.Bool("experimental_strip_nonfunctional_codegen", false, "experimental_strip_nonfunctional_codegen true means that the plugin will not emit certain parts of the generated code in order to make it possible to compare a proto2/proto3 file with its equivalent (according to proto spec) editions file. Primarily, this is the encoded descriptor.")
 	)
@@ -46,18 +47,16 @@ func main() {
 			return errors.New("protoc-gen-gom: go-mod is required")
 		}
 		mlog.Info("go-mod=%v", *goMod)
+		mlog.Info("dataPkgs=%s", *dataPkgs)
 		mlog.Info("rpcPkgs=%s", *rpcPkgs)
 
-		rpcpkgs := map[string]struct{}{}
-		for _, s := range strings.Split(*rpcPkgs, "#") {
-			if len(s) > 0 {
-				rpcpkgs[s] = struct{}{}
-			}
-		}
-		// message名字加上PB前缀
+		dataFiles, rpcFiles := getParams(*dataPkgs, *rpcPkgs)
+		// dataPkgs是 message名字必须加上PB前缀的包名
 		for _, f := range pg.Files {
 			pkgName := string(f.GoPackageName)
-			if _, ok := rpcpkgs[pkgName]; ok {
+			if _, ok := dataFiles[pkgName]; !ok {
+				continue
+			} else if _, ok := rpcFiles[pkgName]; ok {
 				continue
 			}
 			for _, m := range f.Messages {
@@ -82,4 +81,20 @@ func main() {
 		pg.SupportedEditionsMaximum = gengo.SupportedEditionsMaximum
 		return nil
 	})
+}
+
+func getParams(dataPkgs, rpcPkgs string) (datas, rpcs map[string]struct{}) {
+	datas = map[string]struct{}{}
+	for _, s := range strings.Split(dataPkgs, "^") {
+		if len(s) > 0 {
+			datas[s] = struct{}{}
+		}
+	}
+	rpcs = map[string]struct{}{}
+	for _, s := range strings.Split(rpcPkgs, "^") {
+		if len(s) > 0 {
+			rpcs[s] = struct{}{}
+		}
+	}
+	return
 }

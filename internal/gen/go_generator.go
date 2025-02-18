@@ -73,7 +73,7 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 			if pkg == "" {
 				g.P("m.", field.mName, " = ", "New", mMsg, "()")
 			} else {
-				g.P("m.", field.mName, " = ", pkg, ".", "New", mMsg, "{}")
+				g.P("m.", field.mName, " = ", pkg, ".", "New", mMsg, "()")
 			}
 		}
 	}
@@ -97,7 +97,7 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 			if pkg == "" {
 				g.P("pb.", m.Fields[i].GoName, " = ", "New", pbMsg, "()")
 			} else {
-				g.P("pb.", m.Fields[i].GoName, " = ", pkg, ".", "New", pbMsg, "{}")
+				g.P("pb.", m.Fields[i].GoName, " = ", pkg, ".", "New", pbMsg, "()")
 			}
 		}
 	}

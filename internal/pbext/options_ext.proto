@@ -1,14 +1,15 @@
 syntax = "proto3";
-option go_package = "xx/pbext";
+option go_package = "./pbext";
 
 import "google/protobuf/descriptor.proto";
 
-// in options_ext.proto path: protoc --go_out=paths=source_relative:.  *.proto
+// in options_ext.proto path: protoc --go_out=paths=source_relative:. options_ext.proto
 
 extend google.protobuf.MessageOptions {
-    bool is_model = 50000;
+    bool is_model = 50000;      //告诉插件当前Message为model
+    bool inner_msg = 50001;     //该Message是一个内部消息，不会暴露给客户端
 }
 
 extend google.protobuf.FieldOptions {
-    bool no_sync_client = 50000;
+    bool no_sync_client = 50000; //该字段不需要同步给客户端
 }
