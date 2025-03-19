@@ -29,16 +29,14 @@ func main() {
 	}
 
 	var (
-		flags                                 flag.FlagSet
-		goMod                                 = flags.String("go-mod", "", "go module name")
-		dataPkgs                              = flags.String("data-pkgs", "", "data pkg names sep=^")
-		rpcPkgs                               = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
-		plugins                               = flags.String("plugins", "", "deprecated option")
-		experimentalStripNonFunctionalCodegen = flags.Bool("experimental_strip_nonfunctional_codegen", false, "experimental_strip_nonfunctional_codegen true means that the plugin will not emit certain parts of the generated code in order to make it possible to compare a proto2/proto3 file with its equivalent (according to proto spec) editions file. Primarily, this is the encoded descriptor.")
+		flags    flag.FlagSet
+		goMod    = flags.String("go-mod", "", "go module name")
+		dataPkgs = flags.String("data-pkgs", "", "data pkg names sep=^")
+		rpcPkgs  = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
+		plugins  = flags.String("plugins", "", "deprecated option")
 	)
 	protogen.Options{
-		ParamFunc:                    flags.Set,
-		InternalStripForEditionsDiff: experimentalStripNonFunctionalCodegen,
+		ParamFunc: flags.Set,
 	}.Run(func(pg *protogen.Plugin) error {
 		if *plugins != "" {
 			return errors.New("protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC\n\n" + "See " + grpcDocURL + " for more information")
