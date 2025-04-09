@@ -8,7 +8,6 @@ package game
 
 import (
 	datas "github.com/protoc-gen-gom/example/pbout/go/datas"
-	_ "github.com/protoc-gen-gom/example/pbout/go/pbext"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -22,88 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 添加活动
-type CGameUpdateActivity struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Info *datas.PBActivityData `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
-}
-
-func (x *CGameUpdateActivity) Reset() {
-	*x = CGameUpdateActivity{}
-	mi := &file_game_activity_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CGameUpdateActivity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CGameUpdateActivity) ProtoMessage() {}
-
-func (x *CGameUpdateActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_game_activity_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CGameUpdateActivity.ProtoReflect.Descriptor instead.
-func (*CGameUpdateActivity) Descriptor() ([]byte, []int) {
-	return file_game_activity_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *CGameUpdateActivity) GetInfo() *datas.PBActivityData {
-	if x != nil {
-		return x.Info
-	}
-	return nil
-}
-
-type SGameUpdateActivity struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *SGameUpdateActivity) Reset() {
-	*x = SGameUpdateActivity{}
-	mi := &file_game_activity_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SGameUpdateActivity) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SGameUpdateActivity) ProtoMessage() {}
-
-func (x *SGameUpdateActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_game_activity_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SGameUpdateActivity.ProtoReflect.Descriptor instead.
-func (*SGameUpdateActivity) Descriptor() ([]byte, []int) {
-	return file_game_activity_proto_rawDescGZIP(), []int{1}
-}
-
 // 拉取活动列表
 type CGetActivityList struct {
 	state         protoimpl.MessageState
@@ -113,7 +30,7 @@ type CGetActivityList struct {
 
 func (x *CGetActivityList) Reset() {
 	*x = CGetActivityList{}
-	mi := &file_game_activity_proto_msgTypes[2]
+	mi := &file_game_activity_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -125,7 +42,7 @@ func (x *CGetActivityList) String() string {
 func (*CGetActivityList) ProtoMessage() {}
 
 func (x *CGetActivityList) ProtoReflect() protoreflect.Message {
-	mi := &file_game_activity_proto_msgTypes[2]
+	mi := &file_game_activity_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -138,7 +55,7 @@ func (x *CGetActivityList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CGetActivityList.ProtoReflect.Descriptor instead.
 func (*CGetActivityList) Descriptor() ([]byte, []int) {
-	return file_game_activity_proto_rawDescGZIP(), []int{2}
+	return file_game_activity_proto_rawDescGZIP(), []int{0}
 }
 
 type SGetActivityList struct {
@@ -146,12 +63,12 @@ type SGetActivityList struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Infos []*datas.PBActivityData `protobuf:"bytes,1,rep,name=infos,proto3" json:"infos,omitempty"`
+	Infos []*datas.PBActivityInfo `protobuf:"bytes,1,rep,name=infos,proto3" json:"infos,omitempty"`
 }
 
 func (x *SGetActivityList) Reset() {
 	*x = SGetActivityList{}
-	mi := &file_game_activity_proto_msgTypes[3]
+	mi := &file_game_activity_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -163,7 +80,7 @@ func (x *SGetActivityList) String() string {
 func (*SGetActivityList) ProtoMessage() {}
 
 func (x *SGetActivityList) ProtoReflect() protoreflect.Message {
-	mi := &file_game_activity_proto_msgTypes[3]
+	mi := &file_game_activity_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,10 +93,10 @@ func (x *SGetActivityList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SGetActivityList.ProtoReflect.Descriptor instead.
 func (*SGetActivityList) Descriptor() ([]byte, []int) {
-	return file_game_activity_proto_rawDescGZIP(), []int{3}
+	return file_game_activity_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SGetActivityList) GetInfos() []*datas.PBActivityData {
+func (x *SGetActivityList) GetInfos() []*datas.PBActivityInfo {
 	if x != nil {
 		return x.Infos
 	}
@@ -192,24 +109,16 @@ var file_game_activity_proto_rawDesc = []byte{
 	0x0a, 0x13, 0x67, 0x61, 0x6d, 0x65, 0x2f, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x67, 0x61, 0x6d, 0x65, 0x1a, 0x19, 0x64, 0x61, 0x74,
 	0x61, 0x73, 0x2f, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x5f, 0x64, 0x61, 0x74, 0x61,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x17, 0x70, 0x62, 0x65, 0x78, 0x74, 0x2f, 0x6f, 0x70,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x5f, 0x65, 0x78, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x44, 0x0a, 0x13, 0x43, 0x47, 0x61, 0x6d, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x63,
-	0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x12, 0x27, 0x0a, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x73, 0x2e, 0x41, 0x63, 0x74,
-	0x69, 0x76, 0x69, 0x74, 0x79, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x3a,
-	0x04, 0x88, 0xb5, 0x18, 0x01, 0x22, 0x15, 0x0a, 0x13, 0x53, 0x47, 0x61, 0x6d, 0x65, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x22, 0x12, 0x0a, 0x10,
-	0x43, 0x47, 0x65, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74,
-	0x22, 0x3d, 0x0a, 0x10, 0x53, 0x47, 0x65, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79,
-	0x4c, 0x69, 0x73, 0x74, 0x12, 0x29, 0x0a, 0x05, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x18, 0x01, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x73, 0x2e, 0x41, 0x63, 0x74, 0x69,
-	0x76, 0x69, 0x74, 0x79, 0x44, 0x61, 0x74, 0x61, 0x52, 0x05, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x42,
-	0x3c, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x63, 0x2d, 0x67, 0x65, 0x6e, 0x2d, 0x67, 0x6f, 0x6d, 0x2f, 0x65, 0x78, 0x61,
-	0x6d, 0x70, 0x6c, 0x65, 0x2f, 0x70, 0x62, 0x6f, 0x75, 0x74, 0x2f, 0x67, 0x6f, 0x2f, 0x67, 0x61,
-	0x6d, 0x65, 0xaa, 0x02, 0x08, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x12, 0x0a, 0x10, 0x43, 0x47, 0x65, 0x74, 0x41, 0x63,
+	0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x22, 0x3d, 0x0a, 0x10, 0x53, 0x47,
+	0x65, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x29,
+	0x0a, 0x05, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x73, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x49, 0x6e,
+	0x66, 0x6f, 0x52, 0x05, 0x69, 0x6e, 0x66, 0x6f, 0x73, 0x42, 0x3c, 0x5a, 0x2f, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x2d, 0x67,
+	0x65, 0x6e, 0x2d, 0x67, 0x6f, 0x6d, 0x2f, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2f, 0x70,
+	0x62, 0x6f, 0x75, 0x74, 0x2f, 0x67, 0x6f, 0x2f, 0x67, 0x61, 0x6d, 0x65, 0xaa, 0x02, 0x08, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -224,22 +133,19 @@ func file_game_activity_proto_rawDescGZIP() []byte {
 	return file_game_activity_proto_rawDescData
 }
 
-var file_game_activity_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_game_activity_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_game_activity_proto_goTypes = []any{
-	(*CGameUpdateActivity)(nil),  // 0: game.CGameUpdateActivity
-	(*SGameUpdateActivity)(nil),  // 1: game.SGameUpdateActivity
-	(*CGetActivityList)(nil),     // 2: game.CGetActivityList
-	(*SGetActivityList)(nil),     // 3: game.SGetActivityList
-	(*datas.PBActivityData)(nil), // 4: datas.ActivityData
+	(*CGetActivityList)(nil),     // 0: game.CGetActivityList
+	(*SGetActivityList)(nil),     // 1: game.SGetActivityList
+	(*datas.PBActivityInfo)(nil), // 2: datas.ActivityInfo
 }
 var file_game_activity_proto_depIdxs = []int32{
-	4, // 0: game.CGameUpdateActivity.info:type_name -> datas.ActivityData
-	4, // 1: game.SGetActivityList.infos:type_name -> datas.ActivityData
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 0: game.SGetActivityList.infos:type_name -> datas.ActivityInfo
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_game_activity_proto_init() }
@@ -253,7 +159,7 @@ func file_game_activity_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_game_activity_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

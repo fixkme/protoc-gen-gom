@@ -1,0 +1,14 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/gate";
+package gate;
+
+// 玩家
+message CNoticePlayer
+{
+	int64 player_id = 1;
+}
+
+message SNoticePlayer
+{
+}

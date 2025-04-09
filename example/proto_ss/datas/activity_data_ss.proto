@@ -3,9 +3,11 @@ option csharp_namespace = "Protocol";
 option go_package = "github.com/protoc-gen-gom/example/pbout/go/datas";
 package datas;
 
+import "datas/activity_data.proto";
+
 // 服务器用的活动信息
 // 只用于服务器数据库
-message ActivityInfo
+message ActivityData
 {
 	// 活动id
 	int64 activity_id = 1; // 唯一id
@@ -36,63 +38,3 @@ message ActivityInfo
 	// 来源 0后台 1本地配置
 	int64 src_type = 14;
 }
-
-// 活动服务器分组
-message ActivityServerGroup
-{
-	// 分组id
-	int64 id = 1;
-	// 成员列表
-	repeated int64 elems = 2;
-}
-
-// 限时 累积充值玩家信息
-message TimeLimitTotalRechargeInfo
-{
-	// 活动id
-	int64 activity_id = 1;
-	// 用户分组
-	int64 user_group = 2;
-	// 累积充值
-	int64 total_recharge = 3;
-	// 已领取奖励列表
-	map<int64, bool> get_rewards = 4;
-	// 是否处理了结束，如发邮件
-	bool is_over = 5;
-	// 今日是否充值
-	bool daily_flag = 6;
-	// 累积充值天数
-	int64 total_day = 7;
-	// 上次跨天
-	int64 last_reset_time = 8;
-}
-
-// 活动类型
-enum ActivityType
-{
-	Unknown = 0;
-
-	TotalRecharge = 1;
-
-	BattlePass = 2;
-}
-
-// 活动状态
-enum ActivityStatus
-{
-	New = 0;
-
-	Launch = 1;
-
-	Show = 2;
-
-	Open = 3;
-
-	Close = 4;
-
-	Expired = 5;
-
-	Invalid = 6;
-
-}
-

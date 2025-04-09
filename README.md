@@ -13,10 +13,16 @@ go install .
 - 拷贝扩展internal/pbext/options_ext.proto到 example/proto/pbext 目录
 - 生成代码
 ``` shell
-protoc -I ./example/proto  --gom_out=paths=source_relative,\
+protoc -I ./example/proto -I ./example/proto_ss  --gom_out=paths=source_relative,\
 go-mod=github.com/protoc-gen-gom/example/pbout/go,\
 data-pkgs=datas^model,\
 rpc-pkgs=game:\
 ./example/pbout/go \
-./example/proto/datas/*.proto ./example/proto/model/*.proto ./example/proto/game/*.proto
-``` 
+./example/proto/datas/*.proto ./example/proto/model/*.proto ./example/proto/game/*.proto \
+./example/proto_ss/gate/*.proto ./example/proto_ss/datas/*.proto ./example/proto_ss/game/*.proto
+```
+- proto文件命名规范 
+
+    proto文件夹是前后端公共协议，proto_ss是服务端内部协议；
+    proto和proto_ss下的目录名字就是golang的包名，如果两边的内容需要相同包名，那么目录名字应该一样；
+    为了能够通过protoc编译、区分cs、ss，不能出现重名的proto文件，并且，proto_ss里的文件名需要带上_ss之类的标识符

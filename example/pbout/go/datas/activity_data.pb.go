@@ -134,7 +134,7 @@ func (ActivityStatus) EnumDescriptor() ([]byte, []int) {
 
 // 服务器用的活动信息
 // 只用于服务器数据库
-type PBActivityData struct {
+type PBActivityInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -169,20 +169,20 @@ type PBActivityData struct {
 	SrcType int64 `protobuf:"varint,14,opt,name=src_type,json=srcType,proto3" json:"src_type,omitempty"`
 }
 
-func (x *PBActivityData) Reset() {
-	*x = PBActivityData{}
+func (x *PBActivityInfo) Reset() {
+	*x = PBActivityInfo{}
 	mi := &file_datas_activity_data_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *PBActivityData) String() string {
+func (x *PBActivityInfo) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PBActivityData) ProtoMessage() {}
+func (*PBActivityInfo) ProtoMessage() {}
 
-func (x *PBActivityData) ProtoReflect() protoreflect.Message {
+func (x *PBActivityInfo) ProtoReflect() protoreflect.Message {
 	mi := &file_datas_activity_data_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -194,103 +194,103 @@ func (x *PBActivityData) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PBActivityData.ProtoReflect.Descriptor instead.
-func (*PBActivityData) Descriptor() ([]byte, []int) {
+// Deprecated: Use PBActivityInfo.ProtoReflect.Descriptor instead.
+func (*PBActivityInfo) Descriptor() ([]byte, []int) {
 	return file_datas_activity_data_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *PBActivityData) GetActivityId() int64 {
+func (x *PBActivityInfo) GetActivityId() int64 {
 	if x != nil {
 		return x.ActivityId
 	}
 	return 0
 }
 
-func (x *PBActivityData) GetFuncType() ActivityType {
+func (x *PBActivityInfo) GetFuncType() ActivityType {
 	if x != nil {
 		return x.FuncType
 	}
 	return ActivityType_Unknown
 }
 
-func (x *PBActivityData) GetStatus() ActivityStatus {
+func (x *PBActivityInfo) GetStatus() ActivityStatus {
 	if x != nil {
 		return x.Status
 	}
 	return ActivityStatus_New
 }
 
-func (x *PBActivityData) GetShowStart() int64 {
+func (x *PBActivityInfo) GetShowStart() int64 {
 	if x != nil {
 		return x.ShowStart
 	}
 	return 0
 }
 
-func (x *PBActivityData) GetShowEnd() int64 {
+func (x *PBActivityInfo) GetShowEnd() int64 {
 	if x != nil {
 		return x.ShowEnd
 	}
 	return 0
 }
 
-func (x *PBActivityData) GetEffectStart() int64 {
+func (x *PBActivityInfo) GetEffectStart() int64 {
 	if x != nil {
 		return x.EffectStart
 	}
 	return 0
 }
 
-func (x *PBActivityData) GetEffectEnd() int64 {
+func (x *PBActivityInfo) GetEffectEnd() int64 {
 	if x != nil {
 		return x.EffectEnd
 	}
 	return 0
 }
 
-func (x *PBActivityData) GetConfigTemp() int64 {
+func (x *PBActivityInfo) GetConfigTemp() int64 {
 	if x != nil {
 		return x.ConfigTemp
 	}
 	return 0
 }
 
-func (x *PBActivityData) GetConfigContent() string {
+func (x *PBActivityInfo) GetConfigContent() string {
 	if x != nil {
 		return x.ConfigContent
 	}
 	return ""
 }
 
-func (x *PBActivityData) GetConfigName() string {
+func (x *PBActivityInfo) GetConfigName() string {
 	if x != nil {
 		return x.ConfigName
 	}
 	return ""
 }
 
-func (x *PBActivityData) GetServerIncludes() []int64 {
+func (x *PBActivityInfo) GetServerIncludes() []int64 {
 	if x != nil {
 		return x.ServerIncludes
 	}
 	return nil
 }
 
-func (x *PBActivityData) GetServerExcludes() []int64 {
+func (x *PBActivityInfo) GetServerExcludes() []int64 {
 	if x != nil {
 		return x.ServerExcludes
 	}
 	return nil
 }
 
-func (x *PBActivityData) GetServerGroups() []*PBActivityServerGroup {
+func (x *PBActivityInfo) GetServerGroups() []*PBActivityServerGroup {
 	if x != nil {
 		return x.ServerGroups
 	}
 	return nil
 }
 
-func (x *PBActivityData) GetSrcType() int64 {
+func (x *PBActivityInfo) GetSrcType() int64 {
 	if x != nil {
 		return x.SrcType
 	}
@@ -468,8 +468,8 @@ var File_datas_activity_data_proto protoreflect.FileDescriptor
 var file_datas_activity_data_proto_rawDesc = []byte{
 	0x0a, 0x19, 0x64, 0x61, 0x74, 0x61, 0x73, 0x2f, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79,
 	0x5f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x64, 0x61, 0x74,
-	0x61, 0x73, 0x22, 0xa3, 0x04, 0x0a, 0x0c, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x44,
-	0x61, 0x74, 0x61, 0x12, 0x1f, 0x0a, 0x0b, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x5f,
+	0x61, 0x73, 0x22, 0xa3, 0x04, 0x0a, 0x0c, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x49,
+	0x6e, 0x66, 0x6f, 0x12, 0x1f, 0x0a, 0x0b, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x5f,
 	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x61, 0x63, 0x74, 0x69, 0x76, 0x69,
 	0x74, 0x79, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x09, 0x66, 0x75, 0x6e, 0x63, 0x5f, 0x74, 0x79, 0x70,
 	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x73, 0x2e,
@@ -566,15 +566,15 @@ var file_datas_activity_data_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_datas_activity_data_proto_goTypes = []any{
 	(ActivityType)(0),                    // 0: datas.ActivityType
 	(ActivityStatus)(0),                  // 1: datas.ActivityStatus
-	(*PBActivityData)(nil),               // 2: datas.ActivityData
+	(*PBActivityInfo)(nil),               // 2: datas.ActivityInfo
 	(*PBActivityServerGroup)(nil),        // 3: datas.ActivityServerGroup
 	(*PBTimeLimitTotalRechargeInfo)(nil), // 4: datas.TimeLimitTotalRechargeInfo
 	nil,                                  // 5: datas.TimeLimitTotalRechargeInfo.GetRewardsEntry
 }
 var file_datas_activity_data_proto_depIdxs = []int32{
-	0, // 0: datas.ActivityData.func_type:type_name -> datas.ActivityType
-	1, // 1: datas.ActivityData.status:type_name -> datas.ActivityStatus
-	3, // 2: datas.ActivityData.server_groups:type_name -> datas.ActivityServerGroup
+	0, // 0: datas.ActivityInfo.func_type:type_name -> datas.ActivityType
+	1, // 1: datas.ActivityInfo.status:type_name -> datas.ActivityStatus
+	3, // 2: datas.ActivityInfo.server_groups:type_name -> datas.ActivityServerGroup
 	5, // 3: datas.TimeLimitTotalRechargeInfo.get_rewards:type_name -> datas.TimeLimitTotalRechargeInfo.GetRewardsEntry
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type

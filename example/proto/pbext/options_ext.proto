@@ -1,4 +1,4 @@
-// copy from  ../../../internal/pbext/options_ext.proto
+// copy from  https://github.com/fixkme/protoc-gen-gom/blob/main/internal/pbext/options_ext.proto
 syntax = "proto3";
 option go_package = "github.com/protoc-gen-gom/example/pbout/go/pbext";
 
@@ -6,7 +6,6 @@ import "google/protobuf/descriptor.proto";
 
 extend google.protobuf.MessageOptions {
     bool is_model = 50000;      //告诉插件当前Message为model
-    bool inner_msg = 50001;     //该Message是一个内部消息，不会暴露给客户端
 }
 
 extend google.protobuf.FieldOptions {

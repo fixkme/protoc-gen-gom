@@ -1,0 +1,18 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/game";
+package game;
+
+import "model/player_model.proto";
+
+// 拉取活动列表
+message CLoginGame
+{
+}
+
+message SLoginGame
+{
+	model.PlayerModel player_model = 1;
+    int64 timezone_offset = 2; //服务器时区，utc偏移秒数
+    int64 server_time = 3; //服务器时间
+}

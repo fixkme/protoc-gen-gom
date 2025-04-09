@@ -1,0 +1,38 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/game";
+package game;
+
+import "datas/activity_data.proto";
+import "datas/activity_data_ss.proto";
+
+// 添加活动
+message CGameAddActivity
+{
+	datas.ActivityData info = 1;
+}
+
+message SGameAddActivity
+{
+}
+
+// 更新活动
+message CGameUpdateActivity
+{
+	datas.ActivityData info = 1;
+}
+
+message SGameUpdateActivity
+{
+}
+
+// 更新活动状态
+message CGameUpdateActivityStatus
+{
+	int64 id = 1;
+	datas.ActivityStatus status = 2;
+}
+
+message SGameUpdateActivityStatus
+{
+}
