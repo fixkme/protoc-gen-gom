@@ -2,6 +2,7 @@ package gen
 
 import (
 	"fmt"
+	"unicode"
 
 	"github.com/protoc-gen-gom/internal/pbext"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -128,6 +129,16 @@ func bigToSmallCamel(s string) string {
 	b := []byte(s)
 	b[0] += 'a' - 'A'
 	return string(b)
+}
+
+// 首字母大写
+func capitalize(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	runes := []rune(s)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
 }
 
 // M前缀转PB前缀

@@ -13,11 +13,11 @@ go install .
 - 拷贝扩展internal/pbext/options_ext.proto到 example/proto/pbext 目录
 - 生成代码
 ``` shell
-protoc -I ./example/proto -I ./example/proto_ss  --gom_out=paths=source_relative,\
+protoc -I ./example/proto -I ./example/proto_ss  --gom_out=./example/pbout/go \
+--gom_opt=paths=source_relative,\
 go-mod=github.com/protoc-gen-gom/example/pbout/go,\
 data-pkgs=datas^model,\
-rpc-pkgs=game:\
-./example/pbout/go \
+rpc-pkgs=game \
 ./example/proto/datas/*.proto ./example/proto/model/*.proto ./example/proto/game/*.proto \
 ./example/proto_ss/gate/*.proto ./example/proto_ss/datas/*.proto ./example/proto_ss/game/*.proto
 ```

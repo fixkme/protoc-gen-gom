@@ -1,0 +1,13 @@
+syntax = "proto3";
+option go_package = "github.com/protoc-gen-gom/example/pbout/go/game";
+package game;
+
+import "game/login.proto";
+import "game/activity.proto";
+
+//protoc -I ./example/proto --go-grpc_out="example/pbout/go"  --go-grpc_opt=paths=source_relative  example/proto/game/game.grpc.proto
+
+service MGame {
+  rpc LoginGame(game.CLoginGame) returns (game.SLoginGame);
+  rpc GetActivityList(CGetActivityList) returns (SGetActivityList);
+}

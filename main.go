@@ -54,8 +54,6 @@ func main() {
 			pkgName := string(f.GoPackageName)
 			if _, ok := dataFiles[pkgName]; !ok {
 				continue
-			} else if _, ok := rpcFiles[pkgName]; ok {
-				continue
 			}
 			for _, m := range f.Messages {
 				m.GoIdent.GoName = "PB" + m.GoIdent.GoName
@@ -64,10 +62,18 @@ func main() {
 
 		for _, f := range pg.Files {
 			if f.Generate {
+				// 生成pb文件
 				gengo.GenerateFile(pg, f)
 			}
 		}
 
+		// 生成rpc文件
+		rpcGene := gen.NewRpcGenerator(pg)
+		if err := rpcGene.GenerateFile(rpcFiles); err != nil {
+			return err
+		}
+
+		// 生成model文件
 		gen.InitGoModuleName(*goMod)
 		modelGene := gen.NewModelGenerator(pg)
 		if err := modelGene.GenerateFile(); err != nil {
