@@ -225,6 +225,8 @@ func (r *RpcGenerator) GenerateRpcFile(pkgName string, file *RpcFile) {
 	r.generateService(g, file)
 
 	r.generateMethodHandler(g, file)
+
+	r.generateServiceDesc(g, file)
 }
 
 func (r *RpcGenerator) generateService(g *protogen.GeneratedFile, file *RpcFile) {
@@ -244,6 +246,22 @@ func (r *RpcGenerator) generateMethodHandler(g *protogen.GeneratedFile, file *Rp
 		g.P("}")
 		g.P()
 	}
+}
+
+func (r *RpcGenerator) generateServiceDesc(g *protogen.GeneratedFile, file *RpcFile) {
+	g.P("var ", file.ServiceName, "_ServiceDesc = ", grpcPackage.Ident("ServiceDesc"), "{")
+	g.P("ServiceName: ", strconv.Quote(file.ServiceName), ",")
+	g.P("HandlerType: (*", file.ServiceName, "Server)(nil),")
+	g.P("Methods: []", grpcPackage.Ident("MethodDesc"), "{")
+	for method := range file.Methods {
+		g.P("{")
+		g.P("MethodName: ", strconv.Quote(method), ",")
+		g.P("Handler: ", "_", file.ServiceName, "_", method, "_Handler,")
+		g.P("},")
+	}
+	g.P("},")
+	g.P("}")
+	g.P()
 }
 
 // generateFile generates a _grpc.pb.go file containing gRPC service definitions.
