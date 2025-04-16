@@ -1,6 +1,6 @@
 syntax = "proto3";
 option csharp_namespace = "Protocol";
-option go_package = "github.com/protoc-gen-gom/example/pbout/go/game";
+option go_package = "github.com/fixkme/protoc-gen-gom/example/pbout/go/game";
 package game;
 
 import "datas/activity_data.proto";

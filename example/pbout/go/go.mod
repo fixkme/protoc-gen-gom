@@ -1,4 +1,4 @@
-module github.com/protoc-gen-gom/example/pbout/go
+module github.com/fixkme/protoc-gen-gom/example/pbout/go
 
 go 1.22.12
 

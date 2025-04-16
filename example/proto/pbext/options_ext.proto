@@ -1,6 +1,6 @@
 // copy from  https://github.com/fixkme/protoc-gen-gom/blob/main/internal/pbext/options_ext.proto
 syntax = "proto3";
-option go_package = "github.com/protoc-gen-gom/example/pbout/go/pbext";
+option go_package = "github.com/fixkme/protoc-gen-gom/example/pbout/go/pbext";
 
 import "google/protobuf/descriptor.proto";
 

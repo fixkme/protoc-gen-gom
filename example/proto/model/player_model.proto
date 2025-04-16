@@ -1,6 +1,6 @@
 syntax = "proto3";
 option csharp_namespace = "Protocol";
-option go_package = "github.com/protoc-gen-gom/example/pbout/go/model";
+option go_package = "github.com/fixkme/protoc-gen-gom/example/pbout/go/model";
 package model;
 
 import "model/model_activity.proto";

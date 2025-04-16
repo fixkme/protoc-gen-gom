@@ -15,9 +15,9 @@ go install .
 ``` shell
 protoc -I ./example/proto -I ./example/proto_ss  --gom_out=./example/pbout/go \
 --gom_opt=paths=source_relative,\
-go-mod=github.com/protoc-gen-gom/example/pbout/go,\
+go-mod=github.com/fixkme/protoc-gen-gom/example/pbout/go,\
 data-pkgs=datas^model,\
-rpc-pkgs=game \
+rpc-pkgs=game^gate \
 ./example/proto/datas/*.proto ./example/proto/model/*.proto ./example/proto/game/*.proto \
 ./example/proto_ss/gate/*.proto ./example/proto_ss/datas/*.proto ./example/proto_ss/game/*.proto
 ```

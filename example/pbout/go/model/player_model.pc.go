@@ -8,7 +8,7 @@ package model
 
 import (
 	fmt "fmt"
-	pbext "github.com/protoc-gen-gom/example/pbout/go/pbext"
+	pbext "github.com/fixkme/protoc-gen-gom/example/pbout/go/pbext"
 	reflect "reflect"
 	strings "strings"
 )
