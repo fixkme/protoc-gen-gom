@@ -139,6 +139,11 @@ func (r *RpcGenerator) generateService(g *protogen.GeneratedFile, file *RpcFile)
 	}
 	g.P("}")
 	g.P()
+
+	g.P("func Register", file.ServiceName, "Server(s ", rpcPackage.Ident("ServiceRegistrar"), ", srv ", file.ServiceName, "Server) {")
+	g.P("s.RegisterService(&", file.ServiceName, "_ServiceDesc, srv)")
+	g.P("}")
+	g.P()
 }
 
 func (r *RpcGenerator) generateMethodHandler(g *protogen.GeneratedFile, file *RpcFile) {

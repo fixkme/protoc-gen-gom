@@ -15,6 +15,10 @@ type GameServer interface {
 	LoginGame(context.Context, *CLoginGame) (*SLoginGame, error)
 }
 
+func RegisterGameServer(s rpc.ServiceRegistrar, srv GameServer) {
+	s.RegisterService(&Game_ServiceDesc, srv)
+}
+
 func _Game_GameAddActivity_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
 	req := new(CGameAddActivity)
 	if err := proto.Unmarshal(in, req); err != nil {

@@ -11,6 +11,10 @@ type GateServer interface {
 	NoticePlayer(context.Context, *CNoticePlayer) (*SNoticePlayer, error)
 }
 
+func RegisterGateServer(s rpc.ServiceRegistrar, srv GateServer) {
+	s.RegisterService(&Gate_ServiceDesc, srv)
+}
+
 func _Gate_NoticePlayer_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
 	req := new(CNoticePlayer)
 	if err := proto.Unmarshal(in, req); err != nil {

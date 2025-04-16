@@ -2,6 +2,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/fixkme/gokit v0.0.0-20250415040640-f1d47c0280ca h1:XKslBnXShqfc949Q/SJTATXtxA0sr2gyND0cqE6gXqI=
 github.com/fixkme/gokit v0.0.0-20250415040640-f1d47c0280ca/go.mod h1:gpb3q646Drk0ZwkNe8vxJYdH8AQNTyNUmjN2JHF/074=
+github.com/fixkme/gokit v0.0.0-20250416060905-24654a7f846c h1:rRKYKzG4Z7Hp6IEZaFax9AFNBB4G6JkDGxL8QX60/rk=
+github.com/fixkme/gokit v0.0.0-20250416060905-24654a7f846c/go.mod h1:B7cj1tG9tQ967xq4GfND9HF3s18YJHeoCZM8eZQpzmg=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=
 github.com/go-logr/logr v1.4.2/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
 github.com/go-logr/stdr v1.2.2 h1:hSWxHoqTgW2S2qGc0LTAI563KZ5YKYRhT3MFKZMbjag=

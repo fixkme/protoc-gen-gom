@@ -3,7 +3,7 @@ module github.com/fixkme/protoc-gen-gom/example/pbout/go
 go 1.22.12
 
 require (
-	github.com/fixkme/gokit v0.0.0-20250415040640-f1d47c0280ca
+	github.com/fixkme/gokit v0.0.0-20250416060905-24654a7f846c
 	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.5
 )
