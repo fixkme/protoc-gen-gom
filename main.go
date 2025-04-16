@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/protoc-gen-gom/internal/gen"
-	"github.com/protoc-gen-gom/internal/mlog"
+	"github.com/fixkme/protoc-gen-gom/internal/gen"
+	"github.com/fixkme/protoc-gen-gom/internal/mlog"
 	gengo "google.golang.org/protobuf/cmd/protoc-gen-go/internal_gengo"
 	"google.golang.org/protobuf/compiler/protogen"
 )

@@ -1,4 +1,4 @@
-module github.com/protoc-gen-gom
+module github.com/fixkme/protoc-gen-gom
 
 go 1.22.6
 
