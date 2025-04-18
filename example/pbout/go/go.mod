@@ -8,6 +8,8 @@ require (
 	google.golang.org/protobuf v1.36.5
 )
 
+//replace github.com/fixkme/gokit => ../../../../gokit
+
 require (
 	github.com/panjf2000/ants/v2 v2.11.0 // indirect
 	github.com/panjf2000/gnet/v2 v2.7.2 // indirect
