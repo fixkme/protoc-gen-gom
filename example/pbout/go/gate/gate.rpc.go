@@ -15,9 +15,9 @@ func RegisterGateServer(s rpc.ServiceRegistrar, srv GateServer) {
 	s.RegisterService(&Gate_ServiceDesc, srv)
 }
 
-func _Gate_NoticePlayer_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
+func _Gate_NoticePlayer_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
 	req := new(CNoticePlayer)
-	if err := proto.Unmarshal(in, req); err != nil {
+	if err := dec(req); err != nil {
 		return nil, err
 	}
 	return srv.(GateServer).NoticePlayer(ctx, req)

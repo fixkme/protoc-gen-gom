@@ -19,41 +19,41 @@ func RegisterGameServer(s rpc.ServiceRegistrar, srv GameServer) {
 	s.RegisterService(&Game_ServiceDesc, srv)
 }
 
-func _Game_GameAddActivity_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
+func _Game_GameAddActivity_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
 	req := new(CGameAddActivity)
-	if err := proto.Unmarshal(in, req); err != nil {
+	if err := dec(req); err != nil {
 		return nil, err
 	}
 	return srv.(GameServer).GameAddActivity(ctx, req)
 }
 
-func _Game_GameUpdateActivity_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
+func _Game_GameUpdateActivity_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
 	req := new(CGameUpdateActivity)
-	if err := proto.Unmarshal(in, req); err != nil {
+	if err := dec(req); err != nil {
 		return nil, err
 	}
 	return srv.(GameServer).GameUpdateActivity(ctx, req)
 }
 
-func _Game_GameUpdateActivityStatus_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
+func _Game_GameUpdateActivityStatus_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
 	req := new(CGameUpdateActivityStatus)
-	if err := proto.Unmarshal(in, req); err != nil {
+	if err := dec(req); err != nil {
 		return nil, err
 	}
 	return srv.(GameServer).GameUpdateActivityStatus(ctx, req)
 }
 
-func _Game_GetActivityList_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
+func _Game_GetActivityList_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
 	req := new(CGetActivityList)
-	if err := proto.Unmarshal(in, req); err != nil {
+	if err := dec(req); err != nil {
 		return nil, err
 	}
 	return srv.(GameServer).GetActivityList(ctx, req)
 }
 
-func _Game_LoginGame_Handler(srv any, ctx context.Context, in []byte) (proto.Message, error) {
+func _Game_LoginGame_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
 	req := new(CLoginGame)
-	if err := proto.Unmarshal(in, req); err != nil {
+	if err := dec(req); err != nil {
 		return nil, err
 	}
 	return srv.(GameServer).LoginGame(ctx, req)

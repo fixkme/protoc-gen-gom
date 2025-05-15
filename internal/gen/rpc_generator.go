@@ -149,9 +149,10 @@ func (r *RpcGenerator) generateService(g *protogen.GeneratedFile, file *RpcFile)
 func (r *RpcGenerator) generateMethodHandler(g *protogen.GeneratedFile, file *RpcFile) {
 	for _, method := range file.MethodSort {
 		v2 := file.Methods[method]
-		g.P("func _", file.ServiceName, "_", method, "_Handler(srv any, ctx ", contextPackage.Ident("Context"), ", in []byte) (", protoPackage.Ident("Message"), ", error) {")
+		g.P("func _", file.ServiceName, "_", method, "_Handler(srv any, ctx ", contextPackage.Ident("Context"),
+			", dec func(", protoPackage.Ident("Message"), ") error) (", protoPackage.Ident("Message"), ", error) {")
 		g.P("req := new(", v2[0], ")")
-		g.P("if err := ", protoPackage.Ident("Unmarshal"), "(in, req); err != nil {")
+		g.P("if err := dec(req); err != nil {")
 		g.P("return nil, err")
 		g.P("}")
 		g.P("return srv.(", file.ServiceName, "Server).", method, "(ctx, req)")
