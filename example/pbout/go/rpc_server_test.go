@@ -26,7 +26,8 @@ func TestServer(t *testing.T) {
 type ServiceImp struct {
 }
 
-func (s *ServiceImp) NoticePlayer(context.Context, *gate.CNoticePlayer) (*gate.SNoticePlayer, error) {
-	//return &gate.SNoticePlayer{}, nil
-	return nil, fmt.Errorf("handler NoticePlayer logic error")
+func (s *ServiceImp) NoticePlayer(_ context.Context, req *gate.CNoticePlayer) (*gate.SNoticePlayer, error) {
+	fmt.Printf("handler NoticePlayer:%v", req)
+	return &gate.SNoticePlayer{Content: "echoxxx"}, nil
+	//return nil, fmt.Errorf("handler NoticePlayer logic error")
 }

@@ -68,6 +68,7 @@ func (x *CNoticePlayer) GetPlayerId() int64 {
 
 type SNoticePlayer struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Content       string                 `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -102,14 +103,22 @@ func (*SNoticePlayer) Descriptor() ([]byte, []int) {
 	return file_gate_gate_ss_proto_rawDescGZIP(), []int{1}
 }
 
+func (x *SNoticePlayer) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
 var File_gate_gate_ss_proto protoreflect.FileDescriptor
 
 const file_gate_gate_ss_proto_rawDesc = "" +
 	"\n" +
 	"\x12gate/gate_ss.proto\x12\x04gate\",\n" +
 	"\rCNoticePlayer\x12\x1b\n" +
-	"\tplayer_id\x18\x01 \x01(\x03R\bplayerId\"\x0f\n" +
-	"\rSNoticePlayerBCZ6github.com/fixkme/protoc-gen-gom/example/pbout/go/gate\xaa\x02\bProtocolb\x06proto3"
+	"\tplayer_id\x18\x01 \x01(\x03R\bplayerId\")\n" +
+	"\rSNoticePlayer\x12\x18\n" +
+	"\acontent\x18\x01 \x01(\tR\acontentBCZ6github.com/fixkme/protoc-gen-gom/example/pbout/go/gate\xaa\x02\bProtocolb\x06proto3"
 
 var (
 	file_gate_gate_ss_proto_rawDescOnce sync.Once

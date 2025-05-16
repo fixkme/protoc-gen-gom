@@ -11,4 +11,5 @@ message CNoticePlayer
 
 message SNoticePlayer
 {
+	string content = 1;
 }

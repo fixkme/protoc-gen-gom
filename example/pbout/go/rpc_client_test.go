@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/fixkme/gokit/rpc"
+	"github.com/fixkme/protoc-gen-gom/example/pbout/go/gate"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -51,7 +52,7 @@ func (c *RpcClient) call(path string, data proto.Message) {
 		return
 	}
 	lenBuf := make([]byte, 4)
-	binary.BigEndian.PutUint32(lenBuf, uint32(len(buf)))
+	binary.LittleEndian.PutUint32(lenBuf, uint32(len(buf)))
 	if _, err = c.conn.Write(lenBuf); err != nil {
 		log.Printf("Failed to Write lenBuf: %v\n", err)
 		return
@@ -74,7 +75,7 @@ func (c *RpcClient) connect() {
 }
 
 func (c *RpcClient) test() {
-	req := &rpc.RpcRequestMessage{}
+	req := &gate.CNoticePlayer{PlayerId: 123}
 	c.call("Gate/NoticePlayer", req)
 }
 
@@ -85,7 +86,7 @@ func (c *RpcClient) read() {
 		if err != nil {
 			return
 		}
-		dataLen := binary.BigEndian.Uint32(lenBuf)
+		dataLen := binary.LittleEndian.Uint32(lenBuf)
 		msgBuf := make([]byte, dataLen)
 		_, err = c.conn.Read(msgBuf)
 		if err != nil {
