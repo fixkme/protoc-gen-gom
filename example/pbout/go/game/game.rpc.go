@@ -19,44 +19,44 @@ func RegisterGameServer(s rpc.ServiceRegistrar, srv GameServer) {
 	s.RegisterService(&Game_ServiceDesc, srv)
 }
 
-func _Game_GameAddActivity_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
-	req := new(CGameAddActivity)
-	if err := dec(req); err != nil {
-		return nil, err
+func _Game_GameAddActivity_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CGameAddActivity)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GameServer).GameAddActivity(ctx, req.(*CGameAddActivity))
 	}
-	return srv.(GameServer).GameAddActivity(ctx, req)
+	return arg, h
 }
 
-func _Game_GameUpdateActivity_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
-	req := new(CGameUpdateActivity)
-	if err := dec(req); err != nil {
-		return nil, err
+func _Game_GameUpdateActivity_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CGameUpdateActivity)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GameServer).GameUpdateActivity(ctx, req.(*CGameUpdateActivity))
 	}
-	return srv.(GameServer).GameUpdateActivity(ctx, req)
+	return arg, h
 }
 
-func _Game_GameUpdateActivityStatus_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
-	req := new(CGameUpdateActivityStatus)
-	if err := dec(req); err != nil {
-		return nil, err
+func _Game_GameUpdateActivityStatus_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CGameUpdateActivityStatus)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GameServer).GameUpdateActivityStatus(ctx, req.(*CGameUpdateActivityStatus))
 	}
-	return srv.(GameServer).GameUpdateActivityStatus(ctx, req)
+	return arg, h
 }
 
-func _Game_GetActivityList_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
-	req := new(CGetActivityList)
-	if err := dec(req); err != nil {
-		return nil, err
+func _Game_GetActivityList_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CGetActivityList)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GameServer).GetActivityList(ctx, req.(*CGetActivityList))
 	}
-	return srv.(GameServer).GetActivityList(ctx, req)
+	return arg, h
 }
 
-func _Game_LoginGame_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
-	req := new(CLoginGame)
-	if err := dec(req); err != nil {
-		return nil, err
+func _Game_LoginGame_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CLoginGame)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GameServer).LoginGame(ctx, req.(*CLoginGame))
 	}
-	return srv.(GameServer).LoginGame(ctx, req)
+	return arg, h
 }
 
 var Game_ServiceDesc = rpc.ServiceDesc{
@@ -65,23 +65,23 @@ var Game_ServiceDesc = rpc.ServiceDesc{
 	Methods: []rpc.MethodDesc{
 		{
 			MethodName: "GameAddActivity",
-			Handler:    _Game_GameAddActivity_Handler,
+			Handler:    _Game_GameAddActivity_Materializer,
 		},
 		{
 			MethodName: "GameUpdateActivity",
-			Handler:    _Game_GameUpdateActivity_Handler,
+			Handler:    _Game_GameUpdateActivity_Materializer,
 		},
 		{
 			MethodName: "GameUpdateActivityStatus",
-			Handler:    _Game_GameUpdateActivityStatus_Handler,
+			Handler:    _Game_GameUpdateActivityStatus_Materializer,
 		},
 		{
 			MethodName: "GetActivityList",
-			Handler:    _Game_GetActivityList_Handler,
+			Handler:    _Game_GetActivityList_Materializer,
 		},
 		{
 			MethodName: "LoginGame",
-			Handler:    _Game_LoginGame_Handler,
+			Handler:    _Game_LoginGame_Materializer,
 		},
 	},
 }

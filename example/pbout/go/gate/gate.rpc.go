@@ -15,12 +15,12 @@ func RegisterGateServer(s rpc.ServiceRegistrar, srv GateServer) {
 	s.RegisterService(&Gate_ServiceDesc, srv)
 }
 
-func _Gate_NoticePlayer_Handler(srv any, ctx context.Context, dec func(proto.Message) error) (proto.Message, error) {
-	req := new(CNoticePlayer)
-	if err := dec(req); err != nil {
-		return nil, err
+func _Gate_NoticePlayer_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CNoticePlayer)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GateServer).NoticePlayer(ctx, req.(*CNoticePlayer))
 	}
-	return srv.(GateServer).NoticePlayer(ctx, req)
+	return arg, h
 }
 
 var Gate_ServiceDesc = rpc.ServiceDesc{
@@ -29,7 +29,7 @@ var Gate_ServiceDesc = rpc.ServiceDesc{
 	Methods: []rpc.MethodDesc{
 		{
 			MethodName: "NoticePlayer",
-			Handler:    _Gate_NoticePlayer_Handler,
+			Handler:    _Gate_NoticePlayer_Materializer,
 		},
 	},
 }
