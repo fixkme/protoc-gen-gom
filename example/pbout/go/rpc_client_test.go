@@ -1,36 +1,83 @@
 package main
 
 import (
+	"context"
 	"encoding/binary"
 	"fmt"
 	"log"
-	"net"
+	"math/rand"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/fixkme/gokit/rpc"
 	"github.com/fixkme/protoc-gen-gom/example/pbout/go/gate"
+	"github.com/panjf2000/gnet/v2"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestClient(t *testing.T) {
-	c := &RpcClient{}
-	c.connect()
+	conn, err := rpc.NewConnection("127.0.0.1:2333")
+	if err != nil {
+		log.Fatalf("new connection error: %v", err)
+	}
+	logicFn := func(sync bool) {
+		for i := 0; i < 5; i++ {
+			rsp := &gate.SNoticePlayer{}
+			if err := conn.Invoke(context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, sync); err != nil {
+				log.Fatalf("invoke error: %v", err)
+			}
+			fmt.Printf("call rsp:%v\n", rsp)
+			time.Sleep(time.Microsecond * time.Duration(rand.Intn(1000)))
+			// rsp = &gate.SNoticePlayer{}
+			// if err := conn.Invoke(context.Background(), "Gate/NoticePlayerr", &gate.CNoticePlayer{PlayerId: 2}, rsp, true); err != nil {
+			// 	log.Fatalf("invoke error: %v", err)
+			// }
+			// fmt.Printf("call rsp:%v\n", rsp)
+			// return
+		}
+	}
+	go logicFn(false)
+	go logicFn(false)
+	go logicFn(false)
 
-	go c.read()
-
-	fmt.Println("start ...")
-	c.test()
-
-	select {}
+	select {
+	case <-time.After(20 * time.Second):
+	}
 }
 
-type RpcClient struct {
-	conn *net.TCPConn
+func testf() {
+	h := &rpc.ClientHander{}
+	cs, err := gnet.NewClient(h, gnet.WithMulticore(false))
+	if err != nil {
+		log.Fatalf("new client error: %v", err)
+	}
+	if err = cs.Start(); err != nil {
+		log.Fatalf("start client error: %v", err)
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	c, err := cs.DialContext("tcp", "127.0.0.1:2333", ctx)
+	if err != nil {
+		log.Fatalf("dial error: %v", err)
+	}
+
+	go func() {
+		for {
+			call(c, "Gate/NoticePlayer", &gate.CNoticePlayer{})
+			//c.Flush()
+			call(c, "Gate/NoticePlayerb", &gate.CNoticePlayer{})
+			//return
+			time.Sleep(5 * time.Second)
+		}
+	}()
+	select {
+	case <-time.After(20 * time.Second):
+	}
+
 }
 
-func (c *RpcClient) call(path string, data proto.Message) {
+func call(c gnet.Conn, path string, data proto.Message) {
 	// 构造请求消息
 	v2 := strings.SplitN(path, "/", 2)
 	if len(v2) != 2 {
@@ -53,52 +100,13 @@ func (c *RpcClient) call(path string, data proto.Message) {
 	}
 	lenBuf := make([]byte, 4)
 	binary.LittleEndian.PutUint32(lenBuf, uint32(len(buf)))
-	if _, err = c.conn.Write(lenBuf); err != nil {
+	if _, err = c.Write(lenBuf); err != nil {
 		log.Printf("Failed to Write lenBuf: %v\n", err)
 		return
 	}
-	if _, err = c.conn.Write(buf); err != nil {
+	if _, err = c.Write(buf); err != nil {
 		log.Printf("Failed to Write buf: %v\n", err)
 		return
 	}
 	fmt.Println("call succeed")
-}
-func (c *RpcClient) connect() {
-	// 连接到服务器
-	conn, err := net.DialTimeout("tcp4", "127.0.0.1:2333", 5*time.Second)
-	if err != nil {
-		log.Printf("Failed to dial: %v", err)
-		return
-	}
-	c.conn = conn.(*net.TCPConn)
-	fmt.Println("connect succeed")
-}
-
-func (c *RpcClient) test() {
-	req := &gate.CNoticePlayer{PlayerId: 123}
-	c.call("Gate/NoticePlayer", req)
-}
-
-func (c *RpcClient) read() {
-	for {
-		lenBuf := make([]byte, 4)
-		_, err := c.conn.Read(lenBuf)
-		if err != nil {
-			return
-		}
-		dataLen := binary.LittleEndian.Uint32(lenBuf)
-		msgBuf := make([]byte, dataLen)
-		_, err = c.conn.Read(msgBuf)
-		if err != nil {
-			return
-		}
-		// 反序列化
-		msg := &rpc.RpcResponseMessage{}
-		if err = proto.Unmarshal(msgBuf, msg); err != nil {
-			return
-		}
-
-		fmt.Printf("rpc rsp:%v\n", msg)
-		return
-	}
 }

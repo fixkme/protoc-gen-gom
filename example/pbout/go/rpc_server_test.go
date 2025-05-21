@@ -27,7 +27,7 @@ type ServiceImp struct {
 }
 
 func (s *ServiceImp) NoticePlayer(_ context.Context, req *gate.CNoticePlayer) (*gate.SNoticePlayer, error) {
-	fmt.Printf("handler NoticePlayer:%v", req)
-	return &gate.SNoticePlayer{Content: "echoxxx"}, nil
+	fmt.Printf("handler logic NoticePlayer:%v\n", req)
+	return &gate.SNoticePlayer{Content: fmt.Sprintf("echoxxx_%d", req.PlayerId)}, nil
 	//return nil, fmt.Errorf("handler NoticePlayer logic error")
 }
