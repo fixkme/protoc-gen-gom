@@ -4,7 +4,7 @@ go 1.22.12
 
 require (
 	github.com/cloudwego/netpoll v0.7.0
-	github.com/fixkme/gokit v0.0.0-20250416075345-4727849741be
+	github.com/fixkme/gokit v0.0.0-20250609104322-b681b194a2b0
 	github.com/panjf2000/gnet/v2 v2.7.2
 	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.5
