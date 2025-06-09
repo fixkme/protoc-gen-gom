@@ -10,9 +10,22 @@ import (
 	"github.com/fixkme/protoc-gen-gom/example/pbout/go/gate"
 )
 
-func TestServer(t *testing.T) {
-	opt := &rpc.ServerOpt{
+func TestGnetServer(t *testing.T) {
+	opt := &rpc.ServerOpt_Gnet{
 		Addr:          "tcp4://127.0.0.1:2333",
+		ProcessorSize: 4,
+	}
+	server := rpc.NewServer_Gnet(opt)
+	gate.RegisterGateServer(server, &ServiceImp{})
+
+	log.Printf("Server is listening on %s\n", opt.Addr)
+	server.Run()
+}
+
+func TestNetpollServer(t *testing.T) {
+	opt := &rpc.ServerOpt{
+		Addr:          "127.0.0.1:2333",
+		PollerNum:     4,
 		ProcessorSize: 4,
 	}
 	server := rpc.NewServer(opt)
@@ -20,7 +33,6 @@ func TestServer(t *testing.T) {
 
 	log.Printf("Server is listening on %s\n", opt.Addr)
 	server.Run()
-
 }
 
 type ServiceImp struct {

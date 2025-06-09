@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cloudwego/netpoll"
+	"github.com/cloudwego/netpoll/mux"
 	"github.com/fixkme/gokit/rpc"
 	"github.com/fixkme/protoc-gen-gom/example/pbout/go/gate"
 	"github.com/panjf2000/gnet/v2"
@@ -17,68 +19,74 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	conn, err := rpc.NewConnection("127.0.0.1:2333")
-	if err != nil {
-		log.Fatalf("new connection error: %v", err)
-	}
-	logicFn := func(sync bool) {
-		for i := 0; i < 5; i++ {
-			rsp := &gate.SNoticePlayer{}
-			if err := conn.Invoke(context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, sync); err != nil {
-				log.Fatalf("invoke error: %v", err)
-			}
-			fmt.Printf("call rsp:%v\n", rsp)
-			time.Sleep(time.Microsecond * time.Duration(rand.Intn(1000)))
-			// rsp = &gate.SNoticePlayer{}
-			// if err := conn.Invoke(context.Background(), "Gate/NoticePlayerr", &gate.CNoticePlayer{PlayerId: 2}, rsp, true); err != nil {
-			// 	log.Fatalf("invoke error: %v", err)
-			// }
-			// fmt.Printf("call rsp:%v\n", rsp)
-			// return
-		}
-	}
-	go logicFn(false)
-	go logicFn(false)
-	go logicFn(false)
-
-	select {
-	case <-time.After(20 * time.Second):
-	}
+	netpollTest()
 }
 
-func testf() {
+func gnetClient() {
 	h := &rpc.ClientHander{}
-	cs, err := gnet.NewClient(h, gnet.WithMulticore(false))
+	gc, err := gnet.NewClient(h, gnet.WithMulticore(false))
 	if err != nil {
 		log.Fatalf("new client error: %v", err)
 	}
-	if err = cs.Start(); err != nil {
+	if err = gc.Start(); err != nil {
 		log.Fatalf("start client error: %v", err)
 	}
-
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	c, err := cs.DialContext("tcp", "127.0.0.1:2333", ctx)
+	c1, err := gc.Dial("tcp", "127.0.0.1:2333")
 	if err != nil {
 		log.Fatalf("dial error: %v", err)
 	}
+	cs1 := c1.Context().(*rpc.ConnState)
+	c2, err := gc.Dial("tcp", "127.0.0.1:2333")
+	if err != nil {
+		log.Fatalf("dial error: %v", err)
+	}
+	cs2 := c2.Context().(*rpc.ConnState)
 
-	go func() {
-		for {
-			call(c, "Gate/NoticePlayer", &gate.CNoticePlayer{})
-			//c.Flush()
-			call(c, "Gate/NoticePlayerb", &gate.CNoticePlayer{})
-			//return
-			time.Sleep(5 * time.Second)
+	logicFn := func(cs *rpc.ConnState, sync bool) {
+		opt := &rpc.CallOption{Sync: sync}
+		for i := 0; i < 5; i++ {
+			rsp := &gate.SNoticePlayer{}
+			if err := rpc.Invoke(cs, context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, opt); err != nil {
+				log.Printf("invoke error: %v\n", err)
+			}
+			fmt.Printf("call rsp:%v\n", rsp)
+			time.Sleep(time.Microsecond * time.Duration(rand.Intn(1000)))
 		}
-	}()
+	}
+	go logicFn(cs1, true)
+	go logicFn(cs2, true)
+	go logicFn(cs1, true)
+
 	select {
 	case <-time.After(20 * time.Second):
 	}
-
 }
 
-func call(c gnet.Conn, path string, data proto.Message) {
-	// 构造请求消息
+func netpollTest() {
+	cliConn, err := rpc.NewClientConn("tcp", "127.0.0.1:2333", time.Second)
+	if err != nil {
+		log.Fatalf("new client conn error: %v\n", err)
+	}
+	logicFn := func(id int, cs *rpc.ClientConn, sync bool) {
+		opt := &rpc.CallOption{Sync: sync}
+		for i := 0; i < 5; i++ {
+			rsp := &gate.SNoticePlayer{}
+			if err := cs.Invoke(context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, opt); err != nil {
+				log.Printf("invoke error: %v\n", err)
+			}
+			fmt.Printf("%d call rsp:%v\n", id, rsp)
+			time.Sleep(time.Microsecond * time.Duration(rand.Intn(1000)))
+		}
+	}
+	go logicFn(1, cliConn, true)
+	go logicFn(2, cliConn, true)
+	// go logicFn(cliConn, true)
+
+	select {
+	case <-time.After(time.Second * 10):
+	}
+}
+func (cli *CliConn) Call(path string, data proto.Message) (err error) {
 	v2 := strings.SplitN(path, "/", 2)
 	if len(v2) != 2 {
 		log.Fatalf("invalid path: %s", path)
@@ -92,21 +100,98 @@ func call(c gnet.Conn, path string, data proto.Message) {
 		MethodName:  v2[1],
 		Payload:     payload,
 	}
-	// 序列化请求消息
-	buf, err := proto.Marshal(rpcReq)
+	// encode
+	writer := netpoll.NewLinkBuffer()
+	err = Encode(writer, rpcReq)
+	if err != nil {
+		log.Printf("Failed to encode: %v\n", err)
+		return err
+	}
+	cli.wqueue.Add(func() (buf netpoll.Writer, isNil bool) {
+		fmt.Printf("GoroutineID %d worker add send data\n", rpc.GoroutineID())
+		return writer, false
+	})
+	fmt.Printf("GoroutineID %d send ok %d\n", rpc.GoroutineID(), data.(*gate.CNoticePlayer).PlayerId)
+	// decode
+	reader := <-cli.rch
+	resp := &rpc.RpcResponseMessage{}
+	err = Decode(reader, resp)
+	if err != nil {
+		log.Printf("Failed to decode: %v\n", err)
+		return err
+	}
+	fmt.Printf("GoroutineID %d logic recv rpcResp:%v\n", rpc.GoroutineID(), resp)
+	return nil
+}
+
+func newCliConn(conn netpoll.Connection) *CliConn {
+	mc := &CliConn{}
+	mc.conn = conn
+	mc.rch = make(chan netpoll.Reader, 1)
+	// loop read
+	conn.SetOnRequest(func(ctx context.Context, connection netpoll.Connection) error {
+		fmt.Printf("start recv data\n")
+		reader := connection.Reader()
+		// decode
+		bLen, err := reader.Peek(4)
+		if err != nil {
+			return err
+		}
+		l := int(binary.LittleEndian.Uint32(bLen))
+		r, err := reader.Slice(l + 4)
+		if err != nil {
+			log.Printf("Failed to slice: %v\n", err)
+			return err
+		}
+		fmt.Printf("GoroutineID %d io recv data:%v\n", rpc.GoroutineID(), l+4)
+		mc.rch <- r
+		return nil
+	})
+	conn.AddCloseCallback(func(connection netpoll.Connection) error {
+		fmt.Printf("[%v] connection closed\n", connection.RemoteAddr())
+		return nil
+	})
+	// loop write
+	mc.wqueue = mux.NewShardQueue(mux.ShardSize, conn)
+	return mc
+}
+
+type CliConn struct {
+	conn   netpoll.Connection
+	rch    chan netpoll.Reader
+	wqueue *mux.ShardQueue // use for write
+
+}
+
+// Encode .
+func Encode(writer netpoll.Writer, msg *rpc.RpcRequestMessage) (err error) {
+	buf, err := proto.Marshal(msg)
 	if err != nil {
 		log.Printf("Failed to marshal request: %v\n", err)
-		return
+		return err
 	}
-	lenBuf := make([]byte, 4)
+	lenBuf, _ := writer.Malloc(4)
 	binary.LittleEndian.PutUint32(lenBuf, uint32(len(buf)))
-	if _, err = c.Write(lenBuf); err != nil {
-		log.Printf("Failed to Write lenBuf: %v\n", err)
-		return
+	writer.WriteBinary(buf)
+	err = writer.Flush()
+	return err
+}
+
+// Decode .
+func Decode(reader netpoll.Reader, msg *rpc.RpcResponseMessage) (err error) {
+	bLen, err := reader.Next(4)
+	if err != nil {
+		return err
 	}
-	if _, err = c.Write(buf); err != nil {
-		log.Printf("Failed to Write buf: %v\n", err)
-		return
+	l := int(binary.LittleEndian.Uint32(bLen))
+
+	buf, err := reader.ReadBinary(l)
+	if err != nil {
+		return err
 	}
-	fmt.Println("call succeed")
+	if err = proto.Unmarshal(buf, msg); err != nil {
+		return err
+	}
+	err = reader.Release()
+	return err
 }
