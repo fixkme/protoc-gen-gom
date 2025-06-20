@@ -30,7 +30,7 @@ func main() {
 
 	var (
 		flags    flag.FlagSet
-		goMod    = flags.String("go-mod", "", "go module name")
+		pbextPkg = flags.String("pbext-pkg", "", "pbext pkg path")
 		dataPkgs = flags.String("data-pkgs", "", "data pkg names sep=^")
 		rpcPkgs  = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
 		plugins  = flags.String("plugins", "", "deprecated option")
@@ -41,12 +41,9 @@ func main() {
 		if *plugins != "" {
 			return errors.New("protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC\n\n" + "See " + grpcDocURL + " for more information")
 		}
-		if *goMod == "" {
-			return errors.New("protoc-gen-gom: go-mod is required")
-		}
-		mlog.Info("go-mod=%v", *goMod)
-		mlog.Info("dataPkgs=%s", *dataPkgs)
-		mlog.Info("rpcPkgs=%s", *rpcPkgs)
+		mlog.Info("pbext-pkg=%v", *pbextPkg)
+		mlog.Info("data-pkgs=%s", *dataPkgs)
+		mlog.Info("rpc-pkgs=%s", *rpcPkgs)
 
 		dataFiles, rpcFiles := getParams(*dataPkgs, *rpcPkgs)
 		// dataPkgs是 message名字必须加上PB前缀的包名
@@ -74,9 +71,8 @@ func main() {
 		}
 
 		// 生成model文件
-		gen.InitGoModuleName(*goMod)
 		modelGene := gen.NewModelGenerator(pg)
-		if err := modelGene.GenerateFile(); err != nil {
+		if err := modelGene.GenerateFile(*pbextPkg); err != nil {
 			return err
 		}
 

@@ -1,7 +1,7 @@
 #### 后端协议生成插件，生成pb、model代码
 
 ##### 1、插件参数
-- go-mod: go mod包名，见go.mod文件的module声明
+- pbext-pkg: pbext pkg path; 用来放生成pbext的代码
 - rpc-pkgs: rpc包名列表，用^隔开；这些包里面定义了request和response，还有push消息
 - data-pkgs: data包名列表，用^隔开；这些包里面定义data，插件会给message加上PB前缀，目的是和M前缀的model区分开
 
@@ -15,7 +15,7 @@ go install .
 ``` shell
 protoc -I ./example/proto -I ./example/proto_ss  --gom_out=./example/pbout/go \
 --gom_opt=paths=source_relative,\
-go-mod=github.com/fixkme/protoc-gen-gom/example/pbout/go,\
+pbext-pkg=github.com/fixkme/protoc-gen-gom/example/pbout/go,\
 data-pkgs=datas^model,\
 rpc-pkgs=game^gate \
 ./example/proto/datas/*.proto ./example/proto/model/*.proto ./example/proto/game/*.proto \

@@ -16,8 +16,8 @@ var (
 	stringsPkg = protogen.GoImportPath("strings")
 )
 
-func InitGoModuleName(name string) {
-	pbextPkg = protogen.GoImportPath(name + "/pbext")
+func InitPbextPkgName(path string) {
+	pbextPkg = protogen.GoImportPath(path + "/pbext")
 }
 
 func generateFileName(file *protogen.File) string {

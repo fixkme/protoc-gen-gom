@@ -1,6 +1,7 @@
 package gen
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/fixkme/protoc-gen-gom/internal/mlog"
@@ -43,11 +44,20 @@ func NewModelGenerator(gen *protogen.Plugin) *ModelGenerator {
 	}
 }
 
-func (m *ModelGenerator) GenerateFile() error {
+func (m *ModelGenerator) GenerateFile(pbextPkg string) error {
 	for _, f := range m.Plugin.Files {
 		if f.Generate {
 			m.checkFileHasModel(f)
 		}
+	}
+	if len(m.RootModels) == 0 {
+		// 没有定义model数据
+		return nil
+	}
+	if len(pbextPkg) == 0 {
+		return errors.New("pbext-pkg is required")
+	} else {
+		InitPbextPkgName(pbextPkg)
 	}
 	// 递归搜索所有model
 	if err := m.searchSubModels(); err != nil {
