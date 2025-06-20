@@ -1,7 +1,7 @@
 #### 后端协议生成插件，生成pb、model代码
 
 ##### 1、插件参数
-- pbext-pkg: pbext pkg path; 用来放生成pbext的代码
+- pbext-pkg: pbext pkg path; 用来引用生成的pbext代码
 - rpc-pkgs: rpc包名列表，用^隔开；这些包里面定义了request和response，还有push消息
 - data-pkgs: data包名列表，用^隔开；这些包里面定义data，插件会给message加上PB前缀，目的是和M前缀的model区分开
 
