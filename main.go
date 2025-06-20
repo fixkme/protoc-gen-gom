@@ -16,7 +16,7 @@ import (
 )
 
 const grpcDocURL = "https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code"
-const help = `go-mod=github.com/protoc-gen-gom/example/pbout/go`
+const help = `https://github.com/fixkme/protoc-gen-gom/blob/main/README.md`
 
 func main() {
 	if len(os.Args) == 2 && os.Args[1] == "--version" {
