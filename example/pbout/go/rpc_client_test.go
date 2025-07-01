@@ -13,6 +13,7 @@ import (
 	"github.com/cloudwego/netpoll"
 	"github.com/cloudwego/netpoll/mux"
 	"github.com/fixkme/gokit/rpc"
+	g "github.com/fixkme/gokit/util/go"
 	"github.com/fixkme/protoc-gen-gom/example/pbout/go/gate"
 	"github.com/panjf2000/gnet/v2"
 	"google.golang.org/protobuf/proto"
@@ -63,23 +64,36 @@ func gnetClient() {
 }
 
 func netpollTest() {
-	cliConn, err := rpc.NewClientConn("tcp", "127.0.0.1:2333", time.Second)
+	opt := &rpc.ClientOpt{DailTimeout: time.Second}
+	cliConn, err := rpc.NewClientConn("tcp", "127.0.0.1:2333", opt)
 	if err != nil {
 		log.Fatalf("new client conn error: %v\n", err)
 	}
+
 	logicFn := func(id int, cs *rpc.ClientConn, sync bool) {
 		opt := &rpc.CallOption{Sync: sync}
+		if !sync {
+			asyncRetCh := make(chan *rpc.AsyncCallResult, 10)
+			opt.AsyncRetChan = asyncRetCh
+			go func() {
+				for ret := range asyncRetCh {
+					fmt.Printf("%d async call ret:%v\n", id, ret)
+				}
+			}()
+		}
+
 		for i := 0; i < 5; i++ {
 			rsp := &gate.SNoticePlayer{}
-			if err := cs.Invoke(context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, opt); err != nil {
+			if err := cs.Invoke(context.Background(), "Gate", "NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i + 1)}, rsp, opt); err != nil {
 				log.Printf("invoke error: %v\n", err)
+			} else if sync {
+				fmt.Printf("%d sync call rsp:%v\n", id, rsp)
 			}
-			fmt.Printf("%d call rsp:%v\n", id, rsp)
 			time.Sleep(time.Microsecond * time.Duration(rand.Intn(1000)))
 		}
 	}
-	go logicFn(1, cliConn, true)
-	go logicFn(2, cliConn, true)
+	go logicFn(1, cliConn, false)
+	//go logicFn(2, cliConn, false)
 	// go logicFn(cliConn, true)
 
 	select {
@@ -108,10 +122,10 @@ func (cli *CliConn) Call(path string, data proto.Message) (err error) {
 		return err
 	}
 	cli.wqueue.Add(func() (buf netpoll.Writer, isNil bool) {
-		fmt.Printf("GoroutineID %d worker add send data\n", rpc.GoroutineID())
+		fmt.Printf("GoroutineID %d worker add send data\n", g.GoroutineID())
 		return writer, false
 	})
-	fmt.Printf("GoroutineID %d send ok %d\n", rpc.GoroutineID(), data.(*gate.CNoticePlayer).PlayerId)
+	fmt.Printf("GoroutineID %d send ok %d\n", g.GoroutineID(), data.(*gate.CNoticePlayer).PlayerId)
 	// decode
 	reader := <-cli.rch
 	resp := &rpc.RpcResponseMessage{}
@@ -120,7 +134,7 @@ func (cli *CliConn) Call(path string, data proto.Message) (err error) {
 		log.Printf("Failed to decode: %v\n", err)
 		return err
 	}
-	fmt.Printf("GoroutineID %d logic recv rpcResp:%v\n", rpc.GoroutineID(), resp)
+	fmt.Printf("GoroutineID %d logic recv rpcResp:%v\n", g.GoroutineID(), resp)
 	return nil
 }
 
@@ -143,7 +157,7 @@ func newCliConn(conn netpoll.Connection) *CliConn {
 			log.Printf("Failed to slice: %v\n", err)
 			return err
 		}
-		fmt.Printf("GoroutineID %d io recv data:%v\n", rpc.GoroutineID(), l+4)
+		fmt.Printf("GoroutineID %d io recv data:%v\n", g.GoroutineID(), l+4)
 		mc.rch <- r
 		return nil
 	})
