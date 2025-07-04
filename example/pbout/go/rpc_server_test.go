@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/cloudwego/netpoll"
 	"github.com/fixkme/gokit/rpc"
@@ -29,7 +31,7 @@ func TestNetpollServer(t *testing.T) {
 		ListenAddr:     "127.0.0.1:2333",
 		PollerNum:      4,
 		ProcessorSize:  4,
-		DispatcherFunc: func(c netpoll.Connection, req *rpc.RpcRequestMessage) int { return 1 },
+		DispatcherFunc: func(c netpoll.Connection, req *rpc.RpcRequestMessage) int { return int(req.Seq) },
 	}
 	server, err := rpc.NewServer(opt)
 	if err != nil {
@@ -45,6 +47,10 @@ type ServiceImp struct {
 }
 
 func (s *ServiceImp) NoticePlayer(_ context.Context, req *gate.CNoticePlayer) (*gate.SNoticePlayer, error) {
+	if rand.Float32() > 0.5 {
+		fmt.Printf("%d is waiting\n", req.PlayerId)
+		time.Sleep(time.Second * 2)
+	}
 	fmt.Printf("GoroutineID %d handler logic NoticePlayer:%v\n", g.GoroutineID(), req)
 	return &gate.SNoticePlayer{Content: fmt.Sprintf("echoxxx_%d", req.PlayerId)}, nil
 	//return nil, fmt.Errorf("handler NoticePlayer logic error")

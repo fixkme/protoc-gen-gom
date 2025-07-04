@@ -44,7 +44,7 @@ func gnetClient() {
 	cs2 := c2.Context().(*rpc.ConnState)
 
 	logicFn := func(cs *rpc.ConnState, sync bool) {
-		opt := &rpc.CallOption{Sync: sync}
+		opt := &rpc.CallOption{Async: !sync}
 		for i := 0; i < 5; i++ {
 			rsp := &gate.SNoticePlayer{}
 			if err := rpc.Invoke(cs, context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, opt); err != nil {
@@ -71,25 +71,25 @@ func netpollTest() {
 	}
 
 	logicFn := func(id int, cs *rpc.ClientConn, sync bool) {
-		opt := &rpc.CallOption{Sync: sync}
+		opt := &rpc.CallOption{Async: !sync, Timeout: time.Second}
 		if !sync {
 			asyncRetCh := make(chan *rpc.AsyncCallResult, 10)
 			opt.AsyncRetChan = asyncRetCh
 			go func() {
 				for ret := range asyncRetCh {
-					fmt.Printf("%d async call ret:%v\n", id, ret)
+					fmt.Printf("lgoic id %d async call ret:%v\n", id, ret)
 				}
 			}()
 		}
 
 		for i := 0; i < 5; i++ {
 			rsp := &gate.SNoticePlayer{}
-			if err := cs.Invoke(context.Background(), "Gate", "NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i + 1)}, rsp, opt); err != nil {
+			if _, _, err := cs.Invoke(context.Background(), "Gate", "NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i + 1)}, rsp, opt); err != nil {
 				log.Printf("invoke error: %v\n", err)
 			} else if sync {
 				fmt.Printf("%d sync call rsp:%v\n", id, rsp)
 			}
-			time.Sleep(time.Microsecond * time.Duration(rand.Intn(1000)))
+			time.Sleep(time.Millisecond * time.Duration(rand.Intn(1500)))
 		}
 	}
 	go logicFn(1, cliConn, false)
@@ -97,7 +97,7 @@ func netpollTest() {
 	// go logicFn(cliConn, true)
 
 	select {
-	case <-time.After(time.Second * 10):
+	case <-time.After(time.Second * 20):
 	}
 }
 func (cli *CliConn) Call(path string, data proto.Message) (err error) {
