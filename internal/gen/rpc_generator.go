@@ -162,7 +162,7 @@ func (r *RpcGenerator) generateMethodHandler(g *protogen.GeneratedFile, file *Rp
 
 func (r *RpcGenerator) generateServiceDesc(g *protogen.GeneratedFile, file *RpcFile) {
 	g.P("var ", file.ServiceName, "_ServiceDesc = ", rpcPackage.Ident("ServiceDesc"), "{")
-	g.P("ServiceName: ", strconv.Quote(file.ServiceName), ",")
+	g.P("ServiceName: ", strconv.Quote(file.PackageName), ",")
 	g.P("HandlerType: (*", file.ServiceName, "Server)(nil),")
 	g.P("Methods: []", rpcPackage.Ident("MethodDesc"), "{")
 	for _, method := range file.MethodSort {
