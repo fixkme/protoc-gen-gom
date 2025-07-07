@@ -47,7 +47,7 @@ func gnetClient() {
 		opt := &rpc.CallOption{Async: !sync}
 		for i := 0; i < 5; i++ {
 			rsp := &gate.SNoticePlayer{}
-			if err := rpc.Invoke(cs, context.Background(), "Gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, opt); err != nil {
+			if err := rpc.Invoke(cs, context.Background(), "gate/NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i)}, rsp, opt); err != nil {
 				log.Printf("invoke error: %v\n", err)
 			}
 			fmt.Printf("call rsp:%v\n", rsp)
@@ -84,7 +84,7 @@ func netpollTest() {
 
 		for i := 0; i < 5; i++ {
 			rsp := &gate.SNoticePlayer{}
-			if _, _, err := cs.Invoke(context.Background(), "Gate", "NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i + 1)}, rsp, opt); err != nil {
+			if _, _, err := cs.Invoke(context.Background(), "gate", "NoticePlayer", &gate.CNoticePlayer{PlayerId: int64(i + 1)}, rsp, opt); err != nil {
 				log.Printf("invoke error: %v\n", err)
 			} else if sync {
 				fmt.Printf("%d sync call rsp:%v\n", id, rsp)
