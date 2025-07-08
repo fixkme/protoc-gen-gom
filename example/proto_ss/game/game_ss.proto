@@ -1,0 +1,11 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/fixkme/protoc-gen-gom/example/pbout/go/game";
+package game;
+
+message CPlayerOffline {
+    int64 player_id = 1;
+}
+
+message SPlayerOffline {
+}

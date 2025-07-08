@@ -13,6 +13,7 @@ type GameServer interface {
 	GameUpdateActivityStatus(context.Context, *CGameUpdateActivityStatus) (*SGameUpdateActivityStatus, error)
 	GetActivityList(context.Context, *CGetActivityList) (*SGetActivityList, error)
 	LoginGame(context.Context, *CLoginGame) (*SLoginGame, error)
+	PlayerOffline(context.Context, *CPlayerOffline) (*SPlayerOffline, error)
 }
 
 func RegisterGameServer(s rpc.ServiceRegistrar, srv GameServer) {
@@ -59,6 +60,14 @@ func _Game_LoginGame_Materializer(srv any) (proto.Message, rpc.Handler) {
 	return arg, h
 }
 
+func _Game_PlayerOffline_Materializer(srv any) (proto.Message, rpc.Handler) {
+	arg := new(CPlayerOffline)
+	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
+		return srv.(GameServer).PlayerOffline(ctx, req.(*CPlayerOffline))
+	}
+	return arg, h
+}
+
 var Game_ServiceDesc = rpc.ServiceDesc{
 	ServiceName: "game",
 	HandlerType: (*GameServer)(nil),
@@ -82,6 +91,10 @@ var Game_ServiceDesc = rpc.ServiceDesc{
 		{
 			MethodName: "LoginGame",
 			Handler:    _Game_LoginGame_Materializer,
+		},
+		{
+			MethodName: "PlayerOffline",
+			Handler:    _Game_PlayerOffline_Materializer,
 		},
 	},
 }
