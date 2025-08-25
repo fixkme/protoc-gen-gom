@@ -33,7 +33,7 @@ func TestNetpollServer(t *testing.T) {
 		ProcessorSize:  4,
 		DispatcherFunc: func(c netpoll.Connection, req *rpc.RpcRequestMessage) int { return int(req.Seq) },
 	}
-	server, err := rpc.NewServer(opt)
+	server, err := rpc.NewServer(opt, context.Background())
 	if err != nil {
 		log.Fatalf("NewServer err:%v", err)
 	}
