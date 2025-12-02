@@ -1,5 +1,5 @@
 #### 后端协议生成插件，生成pb、model代码
-
+根据https://github.com/protocolbuffers/protobuf-go/tree/master改造而来
 ##### 1、插件参数
 - pbext-pkg: pbext pkg path; 用来引用生成的pbext代码
 - rpc-pkgs: rpc包名列表，用^隔开；这些包里面定义了request和response，还有push消息
@@ -9,6 +9,8 @@
 - 安装插件
 ```shell
 go install .
+# 或者
+go install github.com/fixkme/protoc-gen-gom@latest
 ```
 - 拷贝扩展internal/pbext/options_ext.proto到 example/proto/pbext 目录
 - 生成代码

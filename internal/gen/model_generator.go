@@ -3,6 +3,7 @@ package gen
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/fixkme/protoc-gen-gom/internal/mlog"
 	"github.com/fixkme/protoc-gen-gom/internal/pbext"
@@ -130,14 +131,18 @@ func (m *ModelGenerator) GenerateProtoExt() {
 func (m *ModelGenerator) checkFileHasModel(file *protogen.File) bool {
 	list := make([]*protogen.Message, 0)
 	for _, message := range file.Messages {
-		if !proto.HasExtension(message.Desc.Options(), pbext.E_IsModel) {
-			continue
+		isModel := false
+		if strings.Contains(message.Comments.Leading.String(), "@model") {
+			isModel = true
+		} else if proto.HasExtension(message.Desc.Options(), pbext.E_IsModel) {
+			val := proto.GetExtension(message.Desc.Options(), pbext.E_IsModel)
+			if val.(bool) {
+				isModel = true
+			}
 		}
-		val := proto.GetExtension(message.Desc.Options(), pbext.E_IsModel)
-		if !val.(bool) {
-			continue
+		if isModel {
+			list = append(list, message)
 		}
-		list = append(list, message)
 	}
 	if len(list) > 0 {
 		for _, message := range list {
