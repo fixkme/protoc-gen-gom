@@ -30,7 +30,6 @@ func main() {
 
 	var (
 		flags    flag.FlagSet
-		pbextPkg = flags.String("pbext-pkg", "", "pbext pkg path")
 		dataPkgs = flags.String("data-pkgs", "", "data pkg names sep=^")
 		rpcPkgs  = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
 		plugins  = flags.String("plugins", "", "deprecated option")
@@ -41,7 +40,6 @@ func main() {
 		if *plugins != "" {
 			return errors.New("protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC\n\n" + "See " + grpcDocURL + " for more information")
 		}
-		mlog.Info("pbext-pkg=%v", *pbextPkg)
 		mlog.Info("data-pkgs=%s", *dataPkgs)
 		mlog.Info("rpc-pkgs=%s", *rpcPkgs)
 
@@ -72,7 +70,7 @@ func main() {
 
 		// 生成model文件
 		modelGene := gen.NewModelGenerator(pg)
-		if err := modelGene.GenerateFile(*pbextPkg); err != nil {
+		if err := modelGene.GenerateFile(); err != nil {
 			return err
 		}
 

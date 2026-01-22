@@ -1,7 +1,6 @@
 package gen
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -45,7 +44,7 @@ func NewModelGenerator(gen *protogen.Plugin) *ModelGenerator {
 	}
 }
 
-func (m *ModelGenerator) GenerateFile(pbextPkg string) error {
+func (m *ModelGenerator) GenerateFile() error {
 	for _, f := range m.Plugin.Files {
 		if f.Generate {
 			m.checkFileHasModel(f)
@@ -55,11 +54,7 @@ func (m *ModelGenerator) GenerateFile(pbextPkg string) error {
 		// 没有定义model数据
 		return nil
 	}
-	if len(pbextPkg) == 0 {
-		return errors.New("pbext-pkg is required")
-	} else {
-		InitPbextPkgName(pbextPkg)
-	}
+
 	// 递归搜索所有model
 	if err := m.searchSubModels(); err != nil {
 		return err
@@ -94,7 +89,7 @@ func (m *ModelGenerator) GenerateFile(pbextPkg string) error {
 	for file, models := range m.FileModels {
 		m.GenerateFileModel(file, models)
 	}
-	m.GenerateProtoExt()
+
 	return nil
 }
 
@@ -118,15 +113,15 @@ func (m *ModelGenerator) GenerateFileModel(file *protogen.File, models []*messag
 	}
 }
 
-func (m *ModelGenerator) GenerateProtoExt() {
-	// 生成collector接口
-	g := m.Plugin.NewGeneratedFile("pbext/ICollector.go", pbextPkg)
-	g.P("package pbext")
-	g.P()
-	g.P("type ICollector interface {")
-	g.P("Collect(string, any, bool)")
-	g.P("}")
-}
+// func (m *ModelGenerator) GenerateProtoExt() {
+// 	// 生成collector接口
+// 	g := m.Plugin.NewGeneratedFile("pbext/ICollector.go", pbextPkg)
+// 	g.P("package pbext")
+// 	g.P()
+// 	g.P("type ICollector interface {")
+// 	g.P("Collect(string, any, bool)")
+// 	g.P("}")
+// }
 
 func (m *ModelGenerator) checkFileHasModel(file *protogen.File) bool {
 	list := make([]*protogen.Message, 0)

@@ -8,8 +8,8 @@ package model
 
 import (
 	fmt "fmt"
+	delta "github.com/fixkme/gokit/db/mongo/delta"
 	datas "github.com/fixkme/protoc-gen-gom/example/pbout/go/datas"
-	pbext "github.com/fixkme/protoc-gen-gom/example/pbout/go/pbext"
 	reflect "reflect"
 	strings "strings"
 )
@@ -28,7 +28,7 @@ type MModelActivity struct {
 	// 本对象所有属性的同步key数组
 	fieldSyncIDs [3]string
 	// 收集字典,每帧清空同步
-	collector pbext.ICollector
+	collector delta.ICollector
 	// 监测变化回调
 	changedCb func(string)
 }
@@ -55,7 +55,7 @@ func NewPBModelActivity() *PBModelActivity {
 }
 
 // 设置collector函数
-func (m *MModelActivity) SetCollector(syncID string, collector pbext.ICollector, cb func(string)) {
+func (m *MModelActivity) SetCollector(syncID string, collector delta.ICollector, cb func(string)) {
 	m.selfSyncID = syncID
 	m.collector = collector
 	m.changedCb = cb
@@ -268,7 +268,7 @@ type MSawingInfo struct {
 	// 本对象所有属性的同步key数组
 	fieldSyncIDs [3]string
 	// 收集字典,每帧清空同步
-	collector pbext.ICollector
+	collector delta.ICollector
 	// 监测变化回调
 	changedCb func(string)
 }
@@ -289,7 +289,7 @@ func NewPBSawingInfo() *PBSawingInfo {
 }
 
 // 设置collector函数
-func (m *MSawingInfo) SetCollector(syncID string, collector pbext.ICollector, cb func(string)) {
+func (m *MSawingInfo) SetCollector(syncID string, collector delta.ICollector, cb func(string)) {
 	m.selfSyncID = syncID
 	m.collector = collector
 	m.changedCb = cb

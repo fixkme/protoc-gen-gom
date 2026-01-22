@@ -8,7 +8,7 @@ package datas
 
 import (
 	fmt "fmt"
-	pbext "github.com/fixkme/protoc-gen-gom/example/pbout/go/pbext"
+	delta "github.com/fixkme/gokit/db/mongo/delta"
 	reflect "reflect"
 	strings "strings"
 )
@@ -37,7 +37,7 @@ type MTimeLimitTotalRechargeInfo struct {
 	// 本对象所有属性的同步key数组
 	fieldSyncIDs [8]string
 	// 收集字典,每帧清空同步
-	collector pbext.ICollector
+	collector delta.ICollector
 	// 监测变化回调
 	changedCb func(string)
 }
@@ -65,7 +65,7 @@ func NewPBTimeLimitTotalRechargeInfo() *PBTimeLimitTotalRechargeInfo {
 }
 
 // 设置collector函数
-func (m *MTimeLimitTotalRechargeInfo) SetCollector(syncID string, collector pbext.ICollector, cb func(string)) {
+func (m *MTimeLimitTotalRechargeInfo) SetCollector(syncID string, collector delta.ICollector, cb func(string)) {
 	m.selfSyncID = syncID
 	m.collector = collector
 	m.changedCb = cb

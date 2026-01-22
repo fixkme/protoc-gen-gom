@@ -1,7 +1,6 @@
 #### 后端协议生成插件，生成pb、model代码
 根据https://github.com/protocolbuffers/protobuf-go/tree/master 改造而来
 ##### 1、插件参数
-- pbext-pkg: pbext pkg path; 用来引用生成的pbext代码
 - rpc-pkgs: rpc包名列表，用^隔开；这些包里面定义了request和response，还有push消息
 - data-pkgs: data包名列表，用^隔开；这些包里面定义data，插件会给message加上PB前缀，目的是和M前缀的model区分开
 
@@ -15,13 +14,7 @@ go install github.com/fixkme/protoc-gen-gom@latest
 - 拷贝扩展internal/pbext/options_ext.proto到 example/proto/pbext 目录
 - 生成代码
 ``` shell
-protoc -I ./example/proto -I ./example/proto_ss  --gom_out=./example/pbout/go \
---gom_opt=paths=source_relative,\
-pbext-pkg=github.com/fixkme/protoc-gen-gom/example/pbout/go,\
-data-pkgs=datas^model,\
-rpc-pkgs=game^gate \
-./example/proto/datas/*.proto ./example/proto/model/*.proto ./example/proto/game/*.proto \
-./example/proto_ss/gate/*.proto ./example/proto_ss/datas/*.proto ./example/proto_ss/game/*.proto
+bash example/gen_pbs.sh
 ```
 - proto文件命名规范 
 

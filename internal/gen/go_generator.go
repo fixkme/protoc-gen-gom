@@ -10,15 +10,11 @@ import (
 )
 
 var (
-	pbextPkg   = protogen.GoImportPath("xx/pbext")
+	deltaPkg   = protogen.GoImportPath("github.com/fixkme/gokit/db/mongo/delta")
 	reflectPkg = protogen.GoImportPath("reflect")
 	fmtPkg     = protogen.GoImportPath("fmt")
 	stringsPkg = protogen.GoImportPath("strings")
 )
-
-func InitPbextPkgName(path string) {
-	pbextPkg = protogen.GoImportPath(path + "/pbext")
-}
 
 func generateFileName(file *protogen.File) string {
 	return file.GeneratedFilenamePrefix + ".pc.go"
@@ -47,7 +43,7 @@ func genMessageFields(g *protogen.GeneratedFile, f *protogen.File, m *messageInf
 	g.P("// 本对象所有属性的同步key数组")
 	g.P("fieldSyncIDs [", len(m.Fields), "]string")
 	g.P("// 收集字典,每帧清空同步")
-	g.P("collector ", pbextPkg.Ident("ICollector"))
+	g.P("collector ", deltaPkg.Ident("ICollector"))
 	g.P("// 监测变化回调")
 	g.P("changedCb func(string)")
 	g.P()
@@ -107,7 +103,7 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 
 	// 设置collector函数
 	g.P("// 设置collector函数")
-	g.P("func (m *", m.GoIdent.GoName, ") SetCollector(syncID string, collector ", pbextPkg.Ident("ICollector"), ", cb func(string)) {")
+	g.P("func (m *", m.GoIdent.GoName, ") SetCollector(syncID string, collector ", deltaPkg.Ident("ICollector"), ", cb func(string)) {")
 	g.P("m.selfSyncID = syncID")
 	g.P("m.collector = collector")
 	g.P("m.changedCb = cb")
