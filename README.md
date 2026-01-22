@@ -1,10 +1,14 @@
-#### 后端协议生成插件，生成pb、model代码
-根据https://github.com/protocolbuffers/protobuf-go/tree/master 改造而来
-##### 1、插件参数
+#### 游戏后端protobuf协议生成go code插件
+
+##### 1、介绍
+- 通过protobuf生成pb、model的golang代码，用于[rpc服务](https://github.com/fixkme/gokit/tree/main/rpc)和model数据变化[delta收集](https://github.com/fixkme/gokit/tree/main/db/mongo/delta)
+
+- 根据https://github.com/protocolbuffers/protobuf-go/tree/master 改造而来
+##### 2、插件参数
 - rpc-pkgs: rpc包名列表，用^隔开；这些包里面定义了request和response，还有push消息
 - data-pkgs: data包名列表，用^隔开；这些包里面定义data，插件会给message加上PB前缀，目的是和M前缀的model区分开
 
-##### 2、使用例子
+##### 3、使用例子
 - 安装插件
 ```shell
 go install .
