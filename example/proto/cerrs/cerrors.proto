@@ -1,0 +1,25 @@
+syntax = "proto3";
+option csharp_namespace = "Protocol";
+option go_package = "github.com/fixkme/protoc-gen-gom/example/pbout/go/cerrs";
+package cerrs;
+
+import "pbext/options_ext.proto";
+
+// @CodeError
+// Error codes错误码
+enum ECode {
+    // ok不是错误
+    OK = 0;               // 默认成功
+    UNKNOWN = 1;          // 未知错误
+    NOT_FOUND = 2;        // 未找到
+    // 已存在
+    ALREADY_EXISTS_1N = 3;
+}
+
+enum GlobalECode {
+    option (is_code_error) = true;
+
+    GE_OK = 0;  //缺省值
+    GE_UNKNOWN = 1;
+    GE_CONNECTION_REFUSED = 2;
+}

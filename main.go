@@ -30,6 +30,7 @@ func main() {
 
 	var (
 		flags    flag.FlagSet
+		isDebug  = flags.Bool("debug", false, "debug")
 		dataPkgs = flags.String("data-pkgs", "", "data pkg names sep=^")
 		rpcPkgs  = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
 		plugins  = flags.String("plugins", "", "deprecated option")
@@ -40,6 +41,7 @@ func main() {
 		if *plugins != "" {
 			return errors.New("protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC\n\n" + "See " + grpcDocURL + " for more information")
 		}
+		mlog.Debug = *isDebug
 		mlog.Info("data-pkgs=%s", *dataPkgs)
 		mlog.Info("rpc-pkgs=%s", *rpcPkgs)
 
@@ -71,6 +73,12 @@ func main() {
 		// 生成model文件
 		modelGene := gen.NewModelGenerator(pg)
 		if err := modelGene.GenerateFile(); err != nil {
+			return err
+		}
+
+		// 生成CodeError文件
+		errorGene := gen.NewCodeErrorGenerator(pg)
+		if err := errorGene.GenerateFile(); err != nil {
 			return err
 		}
 

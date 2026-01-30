@@ -70,9 +70,10 @@ func (r *RpcGenerator) addMessage(f *protogen.File, message *protogen.Message) e
 		v2 = &[2]string{"", ""}
 		rpcFile.Methods[methodName] = v2
 	}
-	if msgName[0] == 'C' {
+	switch msgName[0] {
+	case 'C':
 		v2[0] = msgName
-	} else if msgName[0] == 'S' {
+	case 'S':
 		v2[1] = msgName
 	}
 	return nil

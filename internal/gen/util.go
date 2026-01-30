@@ -2,9 +2,12 @@ package gen
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 
 	"github.com/fixkme/protoc-gen-gom/internal/pbext"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -172,4 +175,27 @@ func isASCIIUpper(c byte) bool {
 }
 func isASCIIDigit(c byte) bool {
 	return '0' <= c && c <= '9'
+}
+
+// 大驼峰
+func toPascalCase(s string) string {
+	s = strings.ReplaceAll(s, "_", " ")
+	s = strings.ReplaceAll(s, "-", " ")
+
+	c := cases.Title(language.Und)
+	title := c.String(s)
+
+	return strings.ReplaceAll(title, " ", "")
+}
+
+type trailingComment protogen.Comments
+
+func (c trailingComment) String() string {
+	s := strings.TrimSuffix(protogen.Comments(c).String(), "\n")
+	if strings.Contains(s, "\n") {
+		// We don't support multi-lined trailing comments as it is unclear
+		// how to best render them in the generated code.
+		return ""
+	}
+	return s
 }
