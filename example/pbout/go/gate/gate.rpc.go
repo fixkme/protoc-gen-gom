@@ -15,7 +15,7 @@ func RegisterGateServer(s rpc.ServiceRegistrar, srv GateServer) {
 	s.RegisterService(&Gate_ServiceDesc, srv)
 }
 
-func _Gate_NoticePlayer_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Gate_NoticePlayer_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CNoticePlayer)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GateServer).NoticePlayer(ctx, req.(*CNoticePlayer))

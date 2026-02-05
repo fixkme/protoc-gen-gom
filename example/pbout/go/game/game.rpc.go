@@ -20,7 +20,7 @@ func RegisterGameServer(s rpc.ServiceRegistrar, srv GameServer) {
 	s.RegisterService(&Game_ServiceDesc, srv)
 }
 
-func _Game_GameAddActivity_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Game_GameAddActivity_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CGameAddActivity)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GameServer).GameAddActivity(ctx, req.(*CGameAddActivity))
@@ -28,7 +28,7 @@ func _Game_GameAddActivity_Materializer(srv any) (proto.Message, rpc.Handler) {
 	return arg, h
 }
 
-func _Game_GameUpdateActivity_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Game_GameUpdateActivity_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CGameUpdateActivity)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GameServer).GameUpdateActivity(ctx, req.(*CGameUpdateActivity))
@@ -36,7 +36,7 @@ func _Game_GameUpdateActivity_Materializer(srv any) (proto.Message, rpc.Handler)
 	return arg, h
 }
 
-func _Game_GameUpdateActivityStatus_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Game_GameUpdateActivityStatus_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CGameUpdateActivityStatus)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GameServer).GameUpdateActivityStatus(ctx, req.(*CGameUpdateActivityStatus))
@@ -44,7 +44,7 @@ func _Game_GameUpdateActivityStatus_Materializer(srv any) (proto.Message, rpc.Ha
 	return arg, h
 }
 
-func _Game_GetActivityList_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Game_GetActivityList_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CGetActivityList)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GameServer).GetActivityList(ctx, req.(*CGetActivityList))
@@ -52,7 +52,7 @@ func _Game_GetActivityList_Materializer(srv any) (proto.Message, rpc.Handler) {
 	return arg, h
 }
 
-func _Game_LoginGame_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Game_LoginGame_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CLoginGame)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GameServer).LoginGame(ctx, req.(*CLoginGame))
@@ -60,7 +60,7 @@ func _Game_LoginGame_Materializer(srv any) (proto.Message, rpc.Handler) {
 	return arg, h
 }
 
-func _Game_PlayerOffline_Materializer(srv any) (proto.Message, rpc.Handler) {
+func _Game_PlayerOffline_Materializer(srv any) (proto.Message, rpc.MsgHandler) {
 	arg := new(CPlayerOffline)
 	h := func(ctx context.Context, req proto.Message) (proto.Message, error) {
 		return srv.(GameServer).PlayerOffline(ctx, req.(*CPlayerOffline))

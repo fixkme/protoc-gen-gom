@@ -150,7 +150,7 @@ func (r *RpcGenerator) generateService(g *protogen.GeneratedFile, file *RpcFile)
 func (r *RpcGenerator) generateMethodHandler(g *protogen.GeneratedFile, file *RpcFile) {
 	for _, method := range file.MethodSort {
 		v2 := file.Methods[method]
-		g.P("func _", file.ServiceName, "_", method, "_Materializer(srv any) (", protoPackage.Ident("Message"), ", ", rpcPackage.Ident("Handler"), ") {")
+		g.P("func _", file.ServiceName, "_", method, "_Materializer(srv any) (", protoPackage.Ident("Message"), ", ", rpcPackage.Ident("MsgHandler"), ") {")
 		g.P("arg := new(", v2[0], ")")
 		g.P("h := func(ctx ", contextPackage.Ident("Context"), ", req ", protoPackage.Ident("Message"), ") (", protoPackage.Ident("Message"), ", error) {")
 		g.P("return srv.(", file.ServiceName, "Server).", method, "(ctx, req.(*"+v2[0]+"))")
