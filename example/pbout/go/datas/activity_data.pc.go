@@ -33,8 +33,8 @@ type MTimeLimitTotalRechargeInfo struct {
 	// 上次跨天
 	lastResetTime int64
 
-	// 自己本身的同步key,由父对象指定
-	selfSyncID string
+	// 本对象所有属性的同步key数组
+	fieldSyncIDs [8]string
 	// 收集字典,每帧清空同步
 	collector delta.ICollector
 	// 监测变化回调
@@ -45,6 +45,14 @@ type MTimeLimitTotalRechargeInfo struct {
 func NewMTimeLimitTotalRechargeInfo() *MTimeLimitTotalRechargeInfo {
 	m := &MTimeLimitTotalRechargeInfo{}
 	m.getRewards = make(map[int64]bool)
+	m.fieldSyncIDs[0] = "activity_id"
+	m.fieldSyncIDs[1] = "user_group"
+	m.fieldSyncIDs[2] = "total_recharge"
+	m.fieldSyncIDs[3] = "get_rewards."
+	m.fieldSyncIDs[4] = "is_over"
+	m.fieldSyncIDs[5] = "daily_flag"
+	m.fieldSyncIDs[6] = "total_day"
+	m.fieldSyncIDs[7] = "last_reset_time"
 	return m
 }
 
@@ -62,7 +70,14 @@ func (m *MTimeLimitTotalRechargeInfo) SetCollector(syncID string, collector delt
 	if syncID != "" {
 		syncID = syncID + "."
 	}
-	m.selfSyncID = syncID
+	m.fieldSyncIDs[0] = syncID + "activity_id"
+	m.fieldSyncIDs[1] = syncID + "user_group"
+	m.fieldSyncIDs[2] = syncID + "total_recharge"
+	m.fieldSyncIDs[3] = syncID + "get_rewards."
+	m.fieldSyncIDs[4] = syncID + "is_over"
+	m.fieldSyncIDs[5] = syncID + "daily_flag"
+	m.fieldSyncIDs[6] = syncID + "total_day"
+	m.fieldSyncIDs[7] = syncID + "last_reset_time"
 }
 
 // 检查数值变化函数
@@ -156,14 +171,14 @@ func (m *MTimeLimitTotalRechargeInfo) GetActivityId() int64 {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetActivityId(value int64) {
-	m.checkDirty(m.activityId, value, m.selfSyncID+"activity_id", true)
+	m.checkDirty(m.activityId, value, m.fieldSyncIDs[0], true)
 	m.activityId = value
 }
 
 func (m *MTimeLimitTotalRechargeInfo) AddActivityId(add int64) int64 {
 	oldValue := m.activityId
 	m.activityId += add
-	m.checkDirty(oldValue, m.activityId, m.selfSyncID+"activity_id", true)
+	m.checkDirty(oldValue, m.activityId, m.fieldSyncIDs[0], true)
 	return m.activityId
 }
 
@@ -173,14 +188,14 @@ func (m *MTimeLimitTotalRechargeInfo) GetUserGroup() int64 {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetUserGroup(value int64) {
-	m.checkDirty(m.userGroup, value, m.selfSyncID+"user_group", true)
+	m.checkDirty(m.userGroup, value, m.fieldSyncIDs[1], true)
 	m.userGroup = value
 }
 
 func (m *MTimeLimitTotalRechargeInfo) AddUserGroup(add int64) int64 {
 	oldValue := m.userGroup
 	m.userGroup += add
-	m.checkDirty(oldValue, m.userGroup, m.selfSyncID+"user_group", true)
+	m.checkDirty(oldValue, m.userGroup, m.fieldSyncIDs[1], true)
 	return m.userGroup
 }
 
@@ -190,14 +205,14 @@ func (m *MTimeLimitTotalRechargeInfo) GetTotalRecharge() int64 {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetTotalRecharge(value int64) {
-	m.checkDirty(m.totalRecharge, value, m.selfSyncID+"total_recharge", true)
+	m.checkDirty(m.totalRecharge, value, m.fieldSyncIDs[2], true)
 	m.totalRecharge = value
 }
 
 func (m *MTimeLimitTotalRechargeInfo) AddTotalRecharge(add int64) int64 {
 	oldValue := m.totalRecharge
 	m.totalRecharge += add
-	m.checkDirty(oldValue, m.totalRecharge, m.selfSyncID+"total_recharge", true)
+	m.checkDirty(oldValue, m.totalRecharge, m.fieldSyncIDs[2], true)
 	return m.totalRecharge
 }
 
@@ -208,7 +223,7 @@ func (m *MTimeLimitTotalRechargeInfo) GetGetRewards(key int64) (bool, bool) {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetGetRewards(key int64, value bool) {
-	localSyncKey := m.selfSyncID + "get_rewards." + strconv.FormatInt(key, 10)
+	localSyncKey := m.fieldSyncIDs[3] + strconv.FormatInt(key, 10)
 	var oldValue any
 	if v, ok := m.getRewards[key]; ok {
 		oldValue = v
@@ -220,7 +235,7 @@ func (m *MTimeLimitTotalRechargeInfo) SetGetRewards(key int64, value bool) {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) RemoveGetRewards(key int64) {
-	localSyncKey := m.selfSyncID + "get_rewards." + strconv.FormatInt(key, 10)
+	localSyncKey := m.fieldSyncIDs[3] + strconv.FormatInt(key, 10)
 	m.checkDirty(m.getRewards[key], "__DELETE__", localSyncKey, true)
 	delete(m.getRewards, key)
 }
@@ -250,7 +265,7 @@ func (m *MTimeLimitTotalRechargeInfo) GetIsOver() bool {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetIsOver(value bool) {
-	m.checkDirty(m.isOver, value, m.selfSyncID+"is_over", true)
+	m.checkDirty(m.isOver, value, m.fieldSyncIDs[4], true)
 	m.isOver = value
 }
 
@@ -260,7 +275,7 @@ func (m *MTimeLimitTotalRechargeInfo) GetDailyFlag() bool {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetDailyFlag(value bool) {
-	m.checkDirty(m.dailyFlag, value, m.selfSyncID+"daily_flag", true)
+	m.checkDirty(m.dailyFlag, value, m.fieldSyncIDs[5], true)
 	m.dailyFlag = value
 }
 
@@ -270,14 +285,14 @@ func (m *MTimeLimitTotalRechargeInfo) GetTotalDay() int64 {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetTotalDay(value int64) {
-	m.checkDirty(m.totalDay, value, m.selfSyncID+"total_day", true)
+	m.checkDirty(m.totalDay, value, m.fieldSyncIDs[6], true)
 	m.totalDay = value
 }
 
 func (m *MTimeLimitTotalRechargeInfo) AddTotalDay(add int64) int64 {
 	oldValue := m.totalDay
 	m.totalDay += add
-	m.checkDirty(oldValue, m.totalDay, m.selfSyncID+"total_day", true)
+	m.checkDirty(oldValue, m.totalDay, m.fieldSyncIDs[6], true)
 	return m.totalDay
 }
 
@@ -287,13 +302,13 @@ func (m *MTimeLimitTotalRechargeInfo) GetLastResetTime() int64 {
 }
 
 func (m *MTimeLimitTotalRechargeInfo) SetLastResetTime(value int64) {
-	m.checkDirty(m.lastResetTime, value, m.selfSyncID+"last_reset_time", true)
+	m.checkDirty(m.lastResetTime, value, m.fieldSyncIDs[7], true)
 	m.lastResetTime = value
 }
 
 func (m *MTimeLimitTotalRechargeInfo) AddLastResetTime(add int64) int64 {
 	oldValue := m.lastResetTime
 	m.lastResetTime += add
-	m.checkDirty(oldValue, m.lastResetTime, m.selfSyncID+"last_reset_time", true)
+	m.checkDirty(oldValue, m.lastResetTime, m.fieldSyncIDs[7], true)
 	return m.lastResetTime
 }
