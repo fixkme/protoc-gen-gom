@@ -7,6 +7,7 @@
 
 ##### 2、插件参数
 - debug: 是否打印debug信息
+- syncKeyNoCache: 每个Model struct是否生成fieldSyncIDs []string字段，默认生成，如果不需要则设置为true。区别：有fieldSyncIDs则可以直接获得syncKey，但是耗费更多内存；反之，syncKey通过拼接字符串获得，省内存，但是频繁申请内存、GC释放，不利于CPU性能
 - rpc-pkgs: rpc包名列表，用^隔开；这些包里面定义了request和response，还有push消息
 - data-pkgs: data包名列表，用^隔开；这些包里面定义data，插件会给message加上PB前缀，目的是和M前缀的model区分开
 

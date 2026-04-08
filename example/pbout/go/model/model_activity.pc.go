@@ -26,8 +26,6 @@ type MModelActivity struct {
 
 	// 自己本身的同步key,由父对象指定
 	selfSyncID string
-	// 本对象所有属性的同步key数组
-	fieldSyncIDs [3]string
 	// 收集字典,每帧清空同步
 	collector delta.ICollector
 	// 监测变化回调
@@ -40,9 +38,6 @@ func NewMModelActivity() *MModelActivity {
 	m.localActivityIds = make(map[int32]int32)
 	m.totalRecharges = make(map[int64]*datas.MTimeLimitTotalRechargeInfo)
 	m.sawingData = NewMSawingInfo()
-	m.fieldSyncIDs[0] = "local_activity_ids."
-	m.fieldSyncIDs[1] = "total_recharges."
-	m.fieldSyncIDs[2] = "sawing_data"
 	return m
 }
 
@@ -57,20 +52,17 @@ func NewPBModelActivity() *PBModelActivity {
 
 // 设置collector函数
 func (m *MModelActivity) SetCollector(syncID string, collector delta.ICollector, cb func(string)) {
-	m.selfSyncID = syncID
 	m.collector = collector
 	m.changedCb = cb
 	if syncID != "" {
 		syncID = syncID + "."
 	}
-	m.fieldSyncIDs[0] = syncID + "local_activity_ids."
-	m.fieldSyncIDs[1] = syncID + "total_recharges."
-	m.fieldSyncIDs[2] = syncID + "sawing_data"
+	m.selfSyncID = syncID
 	for key, value := range m.totalRecharges {
-		syncKey := m.fieldSyncIDs[1] + strconv.FormatInt(key, 10)
+		syncKey := m.selfSyncID + "total_recharges." + strconv.FormatInt(key, 10)
 		value.SetCollector(syncKey, collector, cb)
 	}
-	m.sawingData.SetCollector(m.fieldSyncIDs[2], collector, cb)
+	m.sawingData.SetCollector(m.selfSyncID+"sawing_data", collector, cb)
 }
 
 // 检查数值变化函数
@@ -149,7 +141,7 @@ func (m *MModelActivity) GetLocalActivityIds(key int32) (int32, bool) {
 }
 
 func (m *MModelActivity) SetLocalActivityIds(key int32, value int32) {
-	localSyncKey := m.fieldSyncIDs[0] + strconv.FormatInt(int64(key), 10)
+	localSyncKey := m.selfSyncID + "local_activity_ids." + strconv.FormatInt(int64(key), 10)
 	var oldValue any
 	if v, ok := m.localActivityIds[key]; ok {
 		oldValue = v
@@ -161,7 +153,7 @@ func (m *MModelActivity) SetLocalActivityIds(key int32, value int32) {
 }
 
 func (m *MModelActivity) AddLocalActivityIds(key int32, add int32) int32 {
-	localSyncKey := m.fieldSyncIDs[0] + strconv.FormatInt(int64(key), 10)
+	localSyncKey := m.selfSyncID + "local_activity_ids." + strconv.FormatInt(int64(key), 10)
 	var oldValue any
 	var newValue int32
 	if v, ok := m.localActivityIds[key]; ok {
@@ -175,7 +167,7 @@ func (m *MModelActivity) AddLocalActivityIds(key int32, add int32) int32 {
 }
 
 func (m *MModelActivity) RemoveLocalActivityIds(key int32) {
-	localSyncKey := m.fieldSyncIDs[0] + strconv.FormatInt(int64(key), 10)
+	localSyncKey := m.selfSyncID + "local_activity_ids." + strconv.FormatInt(int64(key), 10)
 	m.checkDirty(m.localActivityIds[key], "__DELETE__", localSyncKey, true)
 	delete(m.localActivityIds, key)
 }
@@ -206,7 +198,7 @@ func (m *MModelActivity) GetTotalRecharges(key int64) (*datas.MTimeLimitTotalRec
 }
 
 func (m *MModelActivity) SetTotalRecharges(key int64, value *datas.MTimeLimitTotalRechargeInfo) {
-	localSyncKey := m.fieldSyncIDs[1] + strconv.FormatInt(key, 10)
+	localSyncKey := m.selfSyncID + "total_recharges." + strconv.FormatInt(key, 10)
 	var oldValue any
 	if v, ok := m.totalRecharges[key]; ok {
 		oldValue = v
@@ -220,7 +212,7 @@ func (m *MModelActivity) SetTotalRecharges(key int64, value *datas.MTimeLimitTot
 }
 
 func (m *MModelActivity) RemoveTotalRecharges(key int64) {
-	localSyncKey := m.fieldSyncIDs[1] + strconv.FormatInt(key, 10)
+	localSyncKey := m.selfSyncID + "total_recharges." + strconv.FormatInt(key, 10)
 	m.checkDirty(m.totalRecharges[key], "__DELETE__", localSyncKey, true)
 	delete(m.totalRecharges, key)
 }
@@ -251,8 +243,9 @@ func (m *MModelActivity) GetSawingData() *MSawingInfo {
 }
 
 func (m *MModelActivity) SetSawingData(value *MSawingInfo) {
-	if m.checkDirty(m.sawingData, value, m.fieldSyncIDs[2], true) {
-		value.SetCollector(m.fieldSyncIDs[2], m.collector, m.changedCb)
+	syncKey := m.selfSyncID + "sawing_data"
+	if m.checkDirty(m.sawingData, value, syncKey, true) {
+		value.SetCollector(syncKey, m.collector, m.changedCb)
 	}
 	m.sawingData = value
 }
@@ -266,8 +259,6 @@ type MSawingInfo struct {
 
 	// 自己本身的同步key,由父对象指定
 	selfSyncID string
-	// 本对象所有属性的同步key数组
-	fieldSyncIDs [3]string
 	// 收集字典,每帧清空同步
 	collector delta.ICollector
 	// 监测变化回调
@@ -277,9 +268,6 @@ type MSawingInfo struct {
 // 构造函数
 func NewMSawingInfo() *MSawingInfo {
 	m := &MSawingInfo{}
-	m.fieldSyncIDs[0] = "sawing_round"
-	m.fieldSyncIDs[1] = "sawing_step"
-	m.fieldSyncIDs[2] = "status"
 	return m
 }
 
@@ -291,15 +279,12 @@ func NewPBSawingInfo() *PBSawingInfo {
 
 // 设置collector函数
 func (m *MSawingInfo) SetCollector(syncID string, collector delta.ICollector, cb func(string)) {
-	m.selfSyncID = syncID
 	m.collector = collector
 	m.changedCb = cb
 	if syncID != "" {
 		syncID = syncID + "."
 	}
-	m.fieldSyncIDs[0] = syncID + "sawing_round"
-	m.fieldSyncIDs[1] = syncID + "sawing_step"
-	m.fieldSyncIDs[2] = syncID + "status"
+	m.selfSyncID = syncID
 }
 
 // 检查数值变化函数
@@ -360,14 +345,14 @@ func (m *MSawingInfo) GetSawingRound() int64 {
 }
 
 func (m *MSawingInfo) SetSawingRound(value int64) {
-	m.checkDirty(m.sawingRound, value, m.fieldSyncIDs[0], true)
+	m.checkDirty(m.sawingRound, value, m.selfSyncID+"sawing_round", true)
 	m.sawingRound = value
 }
 
 func (m *MSawingInfo) AddSawingRound(add int64) int64 {
 	oldValue := m.sawingRound
 	m.sawingRound += add
-	m.checkDirty(oldValue, m.sawingRound, m.fieldSyncIDs[0], true)
+	m.checkDirty(oldValue, m.sawingRound, m.selfSyncID+"sawing_round", true)
 	return m.sawingRound
 }
 
@@ -377,14 +362,14 @@ func (m *MSawingInfo) GetSawingStep() int64 {
 }
 
 func (m *MSawingInfo) SetSawingStep(value int64) {
-	m.checkDirty(m.sawingStep, value, m.fieldSyncIDs[1], true)
+	m.checkDirty(m.sawingStep, value, m.selfSyncID+"sawing_step", true)
 	m.sawingStep = value
 }
 
 func (m *MSawingInfo) AddSawingStep(add int64) int64 {
 	oldValue := m.sawingStep
 	m.sawingStep += add
-	m.checkDirty(oldValue, m.sawingStep, m.fieldSyncIDs[1], true)
+	m.checkDirty(oldValue, m.sawingStep, m.selfSyncID+"sawing_step", true)
 	return m.sawingStep
 }
 
@@ -393,6 +378,6 @@ func (m *MSawingInfo) GetStatus() datas.ActivityStatus {
 }
 
 func (m *MSawingInfo) SetStatus(value datas.ActivityStatus) {
-	m.checkDirty(m.status, value, m.fieldSyncIDs[2], true)
+	m.checkDirty(m.status, value, m.selfSyncID+"status", true)
 	m.status = value
 }

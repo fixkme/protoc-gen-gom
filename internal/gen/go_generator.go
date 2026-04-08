@@ -17,6 +17,8 @@ var (
 	strconvPkg = protogen.GoImportPath("strconv")
 )
 
+var SyncKeyNoCache bool
+
 func generateFileName(file *protogen.File) string {
 	return file.GeneratedFilenamePrefix + ".pc.go"
 }
@@ -39,10 +41,13 @@ func genMessageFields(g *protogen.GeneratedFile, f *protogen.File, m *messageInf
 		g.P(field.Comments.Leading, field.mName, " ", field.mType, field.Comments.Trailing)
 	}
 	g.P()
-	g.P("// 自己本身的同步key,由父对象指定")
-	g.P("selfSyncID string")
-	g.P("// 本对象所有属性的同步key数组")
-	g.P("fieldSyncIDs [", len(m.Fields), "]string")
+	if SyncKeyNoCache {
+		g.P("// 自己本身的同步key,由父对象指定")
+		g.P("selfSyncID string")
+	} else {
+		g.P("// 本对象所有属性的同步key数组")
+		g.P("fieldSyncIDs [", len(m.Fields), "]string")
+	}
 	g.P("// 收集字典,每帧清空同步")
 	g.P("collector ", deltaPkg.Ident("ICollector"))
 	g.P("// 监测变化回调")
@@ -74,13 +79,16 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 			}
 		}
 	}
-	for i, field := range m.fields {
-		fieldNameKey := JSONSnakeCase(field.mName)
-		if field.isMap {
-			fieldNameKey = fieldNameKey + "."
+	if !SyncKeyNoCache {
+		for i, field := range m.fields {
+			fieldNameKey := JSONSnakeCase(field.mName)
+			if field.isMap {
+				fieldNameKey = fieldNameKey + "."
+			}
+			g.P("m.fieldSyncIDs[", i, "]", " = ", strconv.Quote(fieldNameKey))
 		}
-		g.P("m.fieldSyncIDs[", i, "]", " = ", strconv.Quote(fieldNameKey))
 	}
+
 	g.P("return m")
 	g.P("}")
 	g.P()
@@ -109,19 +117,23 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 	// 设置collector函数
 	g.P("// 设置collector函数")
 	g.P("func (m *", m.GoIdent.GoName, ") SetCollector(syncID string, collector ", deltaPkg.Ident("ICollector"), ", cb func(string)) {")
-	g.P("m.selfSyncID = syncID")
 	g.P("m.collector = collector")
 	g.P("m.changedCb = cb")
 	g.P("if syncID != ", strconv.Quote(""), " {")
 	g.P("syncID = syncID + ", strconv.Quote("."))
 	g.P("}")
-	for i, field := range m.fields {
-		fieldNameKey := JSONSnakeCase(field.mName)
-		if field.isMap {
-			fieldNameKey = fieldNameKey + "."
+	if SyncKeyNoCache {
+		g.P("m.selfSyncID = syncID")
+	} else {
+		for i, field := range m.fields {
+			fieldNameKey := JSONSnakeCase(field.mName)
+			if field.isMap {
+				fieldNameKey = fieldNameKey + "."
+			}
+			g.P("m.fieldSyncIDs[", i, "]", " = ", "syncID + ", strconv.Quote(fieldNameKey))
 		}
-		g.P("m.fieldSyncIDs[", i, "]", " = ", "syncID + ", strconv.Quote(fieldNameKey))
 	}
+
 	for i, field := range m.fields {
 		if field.isMap && mapValueIsMessage(field.Field) {
 			g.P("for key, value := range m.", field.mName, " {")
@@ -129,7 +141,11 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 			g.P("value.SetCollector(syncKey, collector, cb)")
 			g.P("}")
 		} else if !field.isMap && field.isMessage {
-			g.P("m.", field.mName, ".SetCollector(m.fieldSyncIDs[", i, "], collector, cb)")
+			if SyncKeyNoCache {
+				g.P("m.", field.mName, ".SetCollector(m.selfSyncID +", strconv.Quote(JSONSnakeCase(field.mName)), ", collector, cb)")
+			} else {
+				g.P("m.", field.mName, ".SetCollector(m.fieldSyncIDs[", i, "], collector, cb)")
+			}
 		}
 	}
 	g.P("}")
@@ -295,11 +311,23 @@ func genMessageFieldSetter(g *protogen.GeneratedFile, f *protogen.File, m *messa
 	} else {
 		g.P("func (m *", m.GoIdent.GoName, ") Set", field.GoName, "(value ", field.mType, ") {")
 		if field.isMessage {
-			g.P("if m.checkDirty(m.", field.mName, ", value, m.fieldSyncIDs[", idx, "], true) {")
-			g.P("value.SetCollector(m.fieldSyncIDs[", idx, "], m.collector, m.changedCb)")
-			g.P("}")
+			if SyncKeyNoCache {
+				keyName := strconv.Quote(JSONSnakeCase(field.mName))
+				g.P("syncKey := m.selfSyncID + ", keyName)
+				g.P("if m.checkDirty(m.", field.mName, ", value, syncKey, true) {")
+				g.P("value.SetCollector(syncKey, m.collector, m.changedCb)")
+				g.P("}")
+			} else {
+				g.P("if m.checkDirty(m.", field.mName, ", value, m.fieldSyncIDs[", idx, "], true) {")
+				g.P("value.SetCollector(m.fieldSyncIDs[", idx, "], m.collector, m.changedCb)")
+				g.P("}")
+			}
 		} else {
-			g.P("m.checkDirty(m.", field.mName, ", value, m.fieldSyncIDs[", idx, "], true)")
+			if SyncKeyNoCache {
+				g.P("m.checkDirty(m.", field.mName, ", value, m.selfSyncID + ", strconv.Quote(JSONSnakeCase(field.mName)), ", true)")
+			} else {
+				g.P("m.checkDirty(m.", field.mName, ", value, m.fieldSyncIDs[", idx, "], true)")
+			}
 		}
 		g.P("m.", field.mName, " = value")
 		g.P("}")
@@ -336,7 +364,11 @@ func genMessageFieldAddFunc(g *protogen.GeneratedFile, f *protogen.File, m *mess
 		g.P("func (m *", m.GoIdent.GoName, ") Add", field.GoName, "(add ", field.mType, ") ", field.mType, " {")
 		g.P("oldValue := m.", field.mName)
 		g.P("m.", field.mName, " += add")
-		g.P("m.checkDirty(oldValue, m.", field.mName, ", m.fieldSyncIDs[", idx, "], true)")
+		if SyncKeyNoCache {
+			g.P("m.checkDirty(oldValue, m.", field.mName, ", m.selfSyncID + ", strconv.Quote(JSONSnakeCase(field.mName)), ", true)")
+		} else {
+			g.P("m.checkDirty(oldValue, m.", field.mName, ", m.fieldSyncIDs[", idx, "], true)")
+		}
 		g.P("return m.", field.mName)
 		g.P("}")
 		g.P()
@@ -410,18 +442,36 @@ func mapValueIsMessage(field *protogen.Field) bool {
 }
 
 func printMapSyncKey(g *protogen.GeneratedFile, field *fieldInfo, i int, syncName string) {
-	switch field.mapKeyType {
-	case "string":
-		g.P(syncName, " := m.fieldSyncIDs[", i, "] + key")
-	case "int64":
-		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatInt"), "(key, 10)")
-	case "uint64":
-		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatUint"), "(key, 10)")
-	case "int32":
-		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatInt"), "(int64(key), 10)")
-	case "uint32":
-		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatUint"), "(uint64(key), 10)")
-	default:
-		g.P(syncName, " := ", fmtPkg.Ident("Sprintf"), "(\"%s%v\", m.fieldSyncIDs[", i, "], key)")
+	if !SyncKeyNoCache {
+		switch field.mapKeyType {
+		case "string":
+			g.P(syncName, " := m.fieldSyncIDs[", i, "] + key")
+		case "int64":
+			g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatInt"), "(key, 10)")
+		case "uint64":
+			g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatUint"), "(key, 10)")
+		case "int32":
+			g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatInt"), "(int64(key), 10)")
+		case "uint32":
+			g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatUint"), "(uint64(key), 10)")
+		default:
+			g.P(syncName, " := ", fmtPkg.Ident("Sprintf"), "(\"%s%v\", m.fieldSyncIDs[", i, "], key)")
+		}
+	} else {
+		fieldNameKey := JSONSnakeCase(field.mName) + "."
+		switch field.mapKeyType {
+		case "string":
+			g.P(syncName, " := m.selfSyncID + ", strconv.Quote(fieldNameKey), " + key")
+		case "int64":
+			g.P(syncName, " := m.selfSyncID + ", strconv.Quote(fieldNameKey), " + ", strconvPkg.Ident("FormatInt"), "(key, 10)")
+		case "uint64":
+			g.P(syncName, " := m.selfSyncID + ", strconv.Quote(fieldNameKey), " + ", strconvPkg.Ident("FormatUint"), "(key, 10)")
+		case "int32":
+			g.P(syncName, " := m.selfSyncID + ", strconv.Quote(fieldNameKey), " + ", strconvPkg.Ident("FormatInt"), "(int64(key), 10)")
+		case "uint32":
+			g.P(syncName, " := m.selfSyncID + ", strconv.Quote(fieldNameKey), " + ", strconvPkg.Ident("FormatUint"), "(uint64(key), 10)")
+		default:
+			g.P(syncName, " := m.selfSyncID + ", strconv.Quote(fieldNameKey), " + ", fmtPkg.Ident("Sprintf"), "(\"%v\", key)")
+		}
 	}
 }

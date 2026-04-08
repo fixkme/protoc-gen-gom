@@ -23,8 +23,6 @@ type MPlayerModel struct {
 
 	// 自己本身的同步key,由父对象指定
 	selfSyncID string
-	// 本对象所有属性的同步key数组
-	fieldSyncIDs [3]string
 	// 收集字典,每帧清空同步
 	collector delta.ICollector
 	// 监测变化回调
@@ -36,9 +34,6 @@ func NewMPlayerModel() *MPlayerModel {
 	m := &MPlayerModel{}
 	m.modelActivity = NewMModelActivity()
 	m.modelActivity2 = make(map[string]*MModelActivity)
-	m.fieldSyncIDs[0] = "player_id"
-	m.fieldSyncIDs[1] = "model_activity"
-	m.fieldSyncIDs[2] = "model_activity2."
 	return m
 }
 
@@ -52,18 +47,15 @@ func NewPBPlayerModel() *PBPlayerModel {
 
 // 设置collector函数
 func (m *MPlayerModel) SetCollector(syncID string, collector delta.ICollector, cb func(string)) {
-	m.selfSyncID = syncID
 	m.collector = collector
 	m.changedCb = cb
 	if syncID != "" {
 		syncID = syncID + "."
 	}
-	m.fieldSyncIDs[0] = syncID + "player_id"
-	m.fieldSyncIDs[1] = syncID + "model_activity"
-	m.fieldSyncIDs[2] = syncID + "model_activity2."
-	m.modelActivity.SetCollector(m.fieldSyncIDs[1], collector, cb)
+	m.selfSyncID = syncID
+	m.modelActivity.SetCollector(m.selfSyncID+"model_activity", collector, cb)
 	for key, value := range m.modelActivity2 {
-		syncKey := m.fieldSyncIDs[2] + key
+		syncKey := m.selfSyncID + "model_activity2." + key
 		value.SetCollector(syncKey, collector, cb)
 	}
 }
@@ -135,14 +127,14 @@ func (m *MPlayerModel) GetPlayerId() int64 {
 }
 
 func (m *MPlayerModel) SetPlayerId(value int64) {
-	m.checkDirty(m.playerId, value, m.fieldSyncIDs[0], true)
+	m.checkDirty(m.playerId, value, m.selfSyncID+"player_id", true)
 	m.playerId = value
 }
 
 func (m *MPlayerModel) AddPlayerId(add int64) int64 {
 	oldValue := m.playerId
 	m.playerId += add
-	m.checkDirty(oldValue, m.playerId, m.fieldSyncIDs[0], true)
+	m.checkDirty(oldValue, m.playerId, m.selfSyncID+"player_id", true)
 	return m.playerId
 }
 
@@ -152,8 +144,9 @@ func (m *MPlayerModel) GetModelActivity() *MModelActivity {
 }
 
 func (m *MPlayerModel) SetModelActivity(value *MModelActivity) {
-	if m.checkDirty(m.modelActivity, value, m.fieldSyncIDs[1], true) {
-		value.SetCollector(m.fieldSyncIDs[1], m.collector, m.changedCb)
+	syncKey := m.selfSyncID + "model_activity"
+	if m.checkDirty(m.modelActivity, value, syncKey, true) {
+		value.SetCollector(syncKey, m.collector, m.changedCb)
 	}
 	m.modelActivity = value
 }
@@ -164,7 +157,7 @@ func (m *MPlayerModel) GetModelActivity2(key string) (*MModelActivity, bool) {
 }
 
 func (m *MPlayerModel) SetModelActivity2(key string, value *MModelActivity) {
-	localSyncKey := m.fieldSyncIDs[2] + key
+	localSyncKey := m.selfSyncID + "model_activity2." + key
 	var oldValue any
 	if v, ok := m.modelActivity2[key]; ok {
 		oldValue = v
@@ -178,7 +171,7 @@ func (m *MPlayerModel) SetModelActivity2(key string, value *MModelActivity) {
 }
 
 func (m *MPlayerModel) RemoveModelActivity2(key string) {
-	localSyncKey := m.fieldSyncIDs[2] + key
+	localSyncKey := m.selfSyncID + "model_activity2." + key
 	m.checkDirty(m.modelActivity2[key], "__DELETE__", localSyncKey, true)
 	delete(m.modelActivity2, key)
 }

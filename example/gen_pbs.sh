@@ -15,6 +15,7 @@ rm -rf $OUT_DIR/*
 protoc -I $PROTO_DIR -I $PROTO_SS_DIR --gom_out=$OUT_DIR \
 --gom_opt=paths=source_relative,\
 debug=true,\
+syncKeyNoCache=false,\
 data-pkgs=datas^model,\
 rpc-pkgs=game^gate \
 ./proto/pbext/*.proto \

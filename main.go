@@ -29,11 +29,12 @@ func main() {
 	}
 
 	var (
-		flags    flag.FlagSet
-		isDebug  = flags.Bool("debug", false, "debug")
-		dataPkgs = flags.String("data-pkgs", "", "data pkg names sep=^")
-		rpcPkgs  = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
-		plugins  = flags.String("plugins", "", "deprecated option")
+		flags          flag.FlagSet
+		isDebug        = flags.Bool("debug", false, "debug")
+		syncKeyNoCache = flags.Bool("syncKeyNoCache", false, "syncKey no cache")
+		dataPkgs       = flags.String("data-pkgs", "", "data pkg names sep=^")
+		rpcPkgs        = flags.String("rpc-pkgs", "", "rpc pkg names sep=^")
+		plugins        = flags.String("plugins", "", "deprecated option")
 	)
 	protogen.Options{
 		ParamFunc: flags.Set,
@@ -42,9 +43,11 @@ func main() {
 			return errors.New("protoc-gen-go: plugins are not supported; use 'protoc --go-grpc_out=...' to generate gRPC\n\n" + "See " + grpcDocURL + " for more information")
 		}
 		mlog.Debug = *isDebug
+		mlog.Info("syncKeyNoCache=%v", *syncKeyNoCache)
 		mlog.Info("data-pkgs=%s", *dataPkgs)
 		mlog.Info("rpc-pkgs=%s", *rpcPkgs)
 
+		gen.SyncKeyNoCache = *syncKeyNoCache
 		dataFiles, rpcFiles := getParams(*dataPkgs, *rpcPkgs)
 		// dataPkgs是 message名字必须加上PB前缀的包名
 		for _, f := range pg.Files {
