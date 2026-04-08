@@ -1,5 +1,5 @@
 #!/bin/sh
-
+set -e
 # 进入脚本所在目录
 current_dir="$(dirname "$0")"
 cd "$current_dir"

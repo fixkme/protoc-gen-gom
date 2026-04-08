@@ -14,6 +14,7 @@ var (
 	reflectPkg = protogen.GoImportPath("reflect")
 	fmtPkg     = protogen.GoImportPath("fmt")
 	stringsPkg = protogen.GoImportPath("strings")
+	strconvPkg = protogen.GoImportPath("strconv")
 )
 
 func generateFileName(file *protogen.File) string {
@@ -74,7 +75,11 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 		}
 	}
 	for i, field := range m.fields {
-		g.P("m.fieldSyncIDs[", i, "]", " = ", strconv.Quote(JSONSnakeCase(field.mName)))
+		fieldNameKey := JSONSnakeCase(field.mName)
+		if field.isMap {
+			fieldNameKey = fieldNameKey + "."
+		}
+		g.P("m.fieldSyncIDs[", i, "]", " = ", strconv.Quote(fieldNameKey))
 	}
 	g.P("return m")
 	g.P("}")
@@ -111,12 +116,16 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 	g.P("syncID = syncID + ", strconv.Quote("."))
 	g.P("}")
 	for i, field := range m.fields {
-		g.P("m.fieldSyncIDs[", i, "]", " = ", "syncID + ", strconv.Quote(JSONSnakeCase(field.mName)))
+		fieldNameKey := JSONSnakeCase(field.mName)
+		if field.isMap {
+			fieldNameKey = fieldNameKey + "."
+		}
+		g.P("m.fieldSyncIDs[", i, "]", " = ", "syncID + ", strconv.Quote(fieldNameKey))
 	}
 	for i, field := range m.fields {
 		if field.isMap && mapValueIsMessage(field.Field) {
 			g.P("for key, value := range m.", field.mName, " {")
-			g.P("syncKey := ", fmtPkg.Ident("Sprintf"), "(\"%s.%v\", m.fieldSyncIDs[", i, "], key)")
+			printMapSyncKey(g, field, i, "syncKey")
 			g.P("value.SetCollector(syncKey, collector, cb)")
 			g.P("}")
 		} else if !field.isMap && field.isMessage {
@@ -213,18 +222,18 @@ func genMessageCommonMethods(g *protogen.GeneratedFile, f *protogen.File, m *mes
 			g.P("strBuilder.WriteString(\"{\")")
 			if mapValueIsMessage(field.Field) {
 				g.P("for key, value := range m.", field.mName, " {")
-				g.P("strBuilder.WriteString(", fmtPkg.Ident("Sprintf"), "(\"%v:%s \", key, value.String())", ")")
+				g.P(fmtPkg.Ident("Fprintf"), "(&strBuilder, \"%v:%s \", key, value.String())")
 				g.P("}")
 			} else {
 				g.P("for key, value := range m.", field.mName, " {")
-				g.P("strBuilder.WriteString(", fmtPkg.Ident("Sprintf"), "(\"%v:%v \", key, value)", ")")
+				g.P(fmtPkg.Ident("Fprintf"), "(&strBuilder, \"%v:%v \", key, value)")
 				g.P("}")
 			}
 			g.P("strBuilder.WriteString(\"}\")")
 		} else if field.isMessage {
 			g.P("strBuilder.WriteString(m.", field.mName, ".", "String()", ")")
 		} else {
-			g.P("strBuilder.WriteString(", fmtPkg.Ident("Sprintf"), "(\"%v\", m.", field.mName, ")", ")")
+			g.P(fmtPkg.Ident("Fprintf"), "(&strBuilder, \"%v\", m.", field.mName, ")")
 		}
 		if i < len(m.fields)-1 {
 			g.P("strBuilder.WriteString(\", \")")
@@ -267,7 +276,7 @@ func genMessageFieldGetter(g *protogen.GeneratedFile, f *protogen.File, m *messa
 func genMessageFieldSetter(g *protogen.GeneratedFile, f *protogen.File, m *messageInfo, field *fieldInfo, idx int) {
 	if field.isMap {
 		g.P("func (m *", m.GoIdent.GoName, ") Set", field.GoName, "(key ", field.mapKeyType, ", value ", field.mapValType, ") {")
-		g.P("localSyncKey := ", fmtPkg.Ident("Sprintf"), "(\"%s.%v\", m.fieldSyncIDs[", idx, "], key)")
+		printMapSyncKey(g, field, idx, "localSyncKey")
 		g.P("var oldValue any")
 		g.P("if v, ok := m.", field.mName, "[key]; ok {")
 		g.P("oldValue = v")
@@ -309,7 +318,7 @@ func genMessageFieldAddFunc(g *protogen.GeneratedFile, f *protogen.File, m *mess
 		// map value 为整型
 		if strings.HasPrefix(field.mapValType, "int") {
 			g.P("func (m *", m.GoIdent.GoName, ") Add", field.GoName, "(key ", field.mapKeyType, ", add ", field.mapValType, ") ", field.mapValType, " {")
-			g.P("localSyncKey := ", fmtPkg.Ident("Sprintf"), "(\"%s.%v\", m.fieldSyncIDs[", idx, "], key)")
+			printMapSyncKey(g, field, idx, "localSyncKey")
 			g.P("var oldValue any")
 			g.P("var newValue ", field.mapValType)
 			g.P("if v, ok := m.", field.mName, "[key]; ok {")
@@ -339,7 +348,7 @@ func genMessageFieldMapRemoveFunc(g *protogen.GeneratedFile, f *protogen.File, m
 		return
 	}
 	g.P("func (m *", m.GoIdent.GoName, ") Remove", field.GoName, "(key ", field.mapKeyType, ") {")
-	g.P("localSyncKey := ", fmtPkg.Ident("Sprintf"), "(\"%s.%v\", m.fieldSyncIDs[", idx, "], key)")
+	printMapSyncKey(g, field, idx, "localSyncKey")
 	g.P("m.checkDirty(m.", field.mName, "[key], \"__DELETE__\", localSyncKey, true)")
 	g.P("delete(m.", field.mName, ", key)")
 	g.P("}")
@@ -398,4 +407,21 @@ func mapValueIsMessage(field *protogen.Field) bool {
 	}
 	mapValue := field.Message.Fields[1]
 	return mapValue.Desc.Kind() == protoreflect.MessageKind && !mapValue.Desc.IsMap()
+}
+
+func printMapSyncKey(g *protogen.GeneratedFile, field *fieldInfo, i int, syncName string) {
+	switch field.mapKeyType {
+	case "string":
+		g.P(syncName, " := m.fieldSyncIDs[", i, "] + key")
+	case "int64":
+		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatInt"), "(key, 10)")
+	case "uint64":
+		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatUint"), "(key, 10)")
+	case "int32":
+		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatInt"), "(int64(key), 10)")
+	case "uint32":
+		g.P(syncName, " := m.fieldSyncIDs[", i, "] + ", strconvPkg.Ident("FormatUint"), "(uint64(key), 10)")
+	default:
+		g.P(syncName, " := ", fmtPkg.Ident("Sprintf"), "(\"%s%v\", m.fieldSyncIDs[", i, "], key)")
+	}
 }
